@@ -1,19 +1,21 @@
+from deployer import BaseDeployer
 class BaseExperiment:
     def __init__(self) -> None:
         pass
 
     def start_experiment(self):
+        self.configs = load_configs()
+        self.deployer = BaseDeployer(**self.configs)
         workload_generator()
         data_collector()
         inf_generator()
-        deployer()
         configs()
         timer()
         file_preparation()
 
     def init_environment(self):
-        full_init()
-        init()
+        self.deployer.restart(self.configs["app"], self.configs["port"])
+        self.deployer.reload(self.configs["replicas"])
 
     def generate_test_cases(self):
         self.test_cases = configs().generate_test_cases()
@@ -26,7 +28,7 @@ class BaseExperiment:
 
     def update_environment(self):
         generate_inf()
-        init()
+        self.deployer.reload(self.configs["replicas"])
 
     def end_experiment(self):
         save_file()

@@ -11,3 +11,9 @@ The basic events of a lifecycle are as follows:
 * Start Data Collection
 * Update Evironment
 * End Experiment
+
+## Components
+AEFM relies on different components to perform efficiently and correctly.
+
+### Deployer
+Deployer is used to manage kubernetes resources such as pod, deployments, etc. We manage theses resources based on YAML files, which can help users to detect which part is incorrect more efficient by directly look at YAML files.
