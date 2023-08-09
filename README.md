@@ -17,3 +17,6 @@ AEFM relies on different components to perform efficiently and correctly.
 
 ### Deployer
 Deployer is used to manage kubernetes resources such as pod, deployments, etc. We manage theses resources based on YAML files, which can help users to detect which part is incorrect more efficient by directly look at YAML files.
+
+### Workload Generator
+Workload generator is used to provide pressure to applications. By default, we use [wrk](https://github.com/giltene/wrk2) as workload generator, which can generate HTTP requests. You can also use other workload generating tools, as they provides the required API.

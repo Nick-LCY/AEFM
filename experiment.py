@@ -1,4 +1,5 @@
 from deployer import BaseDeployer
+from workload_generator.wrk import WrkWorkloadGenerator, WrkConfig
 class BaseExperiment:
     def __init__(self) -> None:
         pass
@@ -6,7 +7,8 @@ class BaseExperiment:
     def start_experiment(self):
         self.configs = load_configs()
         self.deployer = BaseDeployer(**self.configs)
-        workload_generator()
+        wrk_config = WrkConfig(**self.configs)
+        self.workload_generator = WrkWorkloadGenerator(wrk_config)
         data_collector()
         inf_generator()
         configs()
@@ -21,7 +23,7 @@ class BaseExperiment:
         self.test_cases = configs().generate_test_cases()
 
     def start_single_test_case(self, test_case):
-        generate_workload()
+        result = self.workload_generator.run(test_case["workload"])
 
     def start_data_collection(self, test_case):
         collect_data()
