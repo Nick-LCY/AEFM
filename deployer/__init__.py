@@ -3,13 +3,28 @@ from models import PodSpec, Node
 from typing import Optional
 from utils.kubernetes_YAMLs import KubernetesYAMLs
 from utils.kubernetes import delete_by_yaml, deploy_by_yaml
+from abc import ABC, abstractmethod
 
 
-class BaseDeployer:
-    """AEFM default deployer, can help to manage applications. We seperate compo
-    nenets of applications into two types: infra components and under test compo
-    nents. ``BaseDeployer`` allows user to deploy and config different type sepe
-    rately. It also provides methods to quickly restart/reload application.
+class DeployerInterface(ABC):
+    """A basic deployer component must has at lease two methods: restart and rel
+    oad. The former one is used to fully restart the application and the later o
+    ne is used to restart under test microservices only."""
+    @abstractmethod
+    def restart(self, application: str, port: int) -> None:
+        """Restart the whole application."""
+
+    @abstractmethod
+    def reload(self, replicas: Optional[dict[str, int]] = None) -> None:
+        """Reload only under test microservices."""
+
+
+class BaseDeployer(DeployerInterface):
+    """AEFM default deployer, can help to manage applications. We seperate micro
+    services of applications into two types: infra microservices and under test 
+    microservices. ``BaseDeployer`` allows user to deploy and config different t
+    ype seperately. It also provides methods to quickly restart/reload applicati
+    on.
     """
 
     def __init__(
@@ -29,7 +44,7 @@ class BaseDeployer:
             infra_nodes (list[Node]): List of nodes that used to deploy infra co
             mponents.
             testbed_nodes (list[Node]): List of nodes that used to deploy under
-            test components.
+            test microservices.
             yaml_repo (str): Path to the YAML files folder.
             app_img (str, optional): Docker image of application, set
             to none to keep not change of original ones. Defaults to None.
@@ -44,7 +59,7 @@ class BaseDeployer:
         self.app_img: Optional[str] = app_img
 
     def prepare_infra_yaml(self) -> "BaseDeployer":
-        """Prepare YAMLs for infra components.
+        """Prepare YAMLs for infra microservices.
 
         Returns:
             BaseDeployer: Return self for chaining.
@@ -66,7 +81,7 @@ class BaseDeployer:
         return self
 
     def deploy_infra_yaml(self) -> "BaseDeployer":
-        """Deploy infra components.
+        """Deploy infra microservices.
 
         Returns:
             BaseDeployer: Return self for chaining.
@@ -78,7 +93,7 @@ class BaseDeployer:
     def prepare_under_test_yaml(
         self, replicas: Optional[dict[str, int]] = None
     ) -> "BaseDeployer":
-        """Prepare YAMLs for under test components.
+        """Prepare YAMLs for under test microservices.
 
         Args:
             replicas (dict[str, int]): Dict of replicas, key is deployment name
@@ -105,7 +120,7 @@ class BaseDeployer:
         return self
 
     def deploy_under_test_yaml(self) -> "BaseDeployer":
-        """Deploy under test components.
+        """Deploy under test microservices.
 
         Returns:
             BaseDeployer: Return self for chaining.
@@ -141,7 +156,7 @@ class BaseDeployer:
                 pass
 
     def reload(self, replicas: Optional[dict[str, int]] = None):
-        """Reload only under test components.
+        """Reload only under test microservices.
 
         Args:
             replicas (dict[str, int]): Dict of replicas, key is deployment name
