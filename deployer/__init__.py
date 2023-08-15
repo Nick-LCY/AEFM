@@ -1,9 +1,9 @@
-import os
 from models import PodSpec, Node
 from typing import Optional
 from utils.kubernetes_YAMLs import KubernetesYAMLs
 from utils.kubernetes import delete_by_yaml, deploy_by_yaml
 from abc import ABC, abstractmethod
+from utils.files import delete_path, create_folder
 
 
 class DeployerInterface(ABC):
@@ -65,10 +65,8 @@ class BaseDeployer(DeployerInterface):
             BaseDeployer: Return self for chaining.
         """
         # Clear YAML files generated previously
-        for file in os.listdir(self.tmp_infra_path):
-            os.remove(file)
-        os.rmdir(self.tmp_infra_path)
-        os.mkdir(self.tmp_infra_path)
+        delete_path(self.tmp_infra_path)
+        create_folder(self.tmp_infra_path)
         # Edit infra YAMLs, save them to tmp folder
         infra_yamls = KubernetesYAMLs(f"{self.yaml_repo}/non-test")
         infra_yamls.update(
@@ -104,10 +102,8 @@ class BaseDeployer(DeployerInterface):
         """
         replicas = replicas if replicas is not None else {}
         # Clear YAML files generated previously
-        for file in os.listdir(self.tmp_under_test_path):
-            os.remove(file)
-        os.rmdir(self.tmp_under_test_path)
-        os.mkdir(self.tmp_under_test_path)
+        delete_path(self.tmp_under_test_path)
+        create_folder(self.tmp_under_test_path)
         # Edit under_test YAMLs, save them to tmp folder
         under_test = KubernetesYAMLs(f"{self.yaml_repo}/test")
         under_test.base_yaml_preparation(

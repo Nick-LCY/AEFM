@@ -1,7 +1,8 @@
-import os, yaml, re, shutil, pathlib
+import os, yaml, re
 from typing import Any, Optional
 from collections.abc import Callable
 from models import PodSpec, Node
+from utils.files import delete_path, create_folder
 
 _AFFINITY_TEMPLATE = """
 nodeAffinity:
@@ -86,10 +87,7 @@ class KubernetesYAMLs:
         Args:
             path (str): folder path for multiple YAML objects or file path for single YAML object
         """
-        if os.path.isfile(path):
-            os.remove(path)
-        if os.path.isdir(path):
-            shutil.rmtree(path)
+        delete_path(path)
 
         def save_file(yaml_obj, file_path):
             # YAML may dump reference instead of object,
@@ -101,11 +99,11 @@ class KubernetesYAMLs:
                 yaml.dump(yaml_obj, file, default_flow_style=False)
 
         if len(self.yamls) == 1:
-            pathlib.Path(path).mkdir(parents=True, exist_ok=True)
-            os.remove(path)
+            create_folder(path)
+            delete_path(path)
             save_file(self.yamls[0], path)
         else:
-            pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+            create_folder(path)
             for yaml_obj in self.yamls:
                 file_name = f'{yaml_obj["metadata"]["name"]}_{yaml_obj["kind"]}.yaml'
                 save_file(yaml_obj, f"{path}/{file_name}")
