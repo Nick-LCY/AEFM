@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from utils.logger import log
 
 
 class ThroughputCollector(ABC):
@@ -57,4 +58,6 @@ class WrkThroughputCollector:
         Returns:
             float: Throughput, unit: requests/second.
         """
-        return self.fetcher.fetch(test_case_name)
+        throughput = self.fetcher.fetch(test_case_name)
+        log.debug("Real throughput: " + throughput)
+        return throughput

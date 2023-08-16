@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from utils.jaeger_fetcher import JaegerFetcher
-import json, re
+import json
 import pandas as pd
 import utils.trace_processor as t_processor
+from utils.logger import log
 
 
 class TraceCollectorInterface(ABC):
@@ -68,16 +69,13 @@ class JaegerTraceCollector(TraceCollectorInterface):
 
         """
         response = self.fetcher.fetch(start_time, end_time, operation, limit)
-        # todo: logger need to add log to file method
-        # self.write_log(f"Fetch latency data from: {response.url}")
+        log.debug(f"Fetch latency data from: {response.url}", to_file=True)
         data = json.loads(response.content)["data"]
         if len(data) == 0:
-            # todo: logger need to add log to file method
-            # self.write_log(f"No traces are fetched!", "error")
+            log.error(f"No traces are fetched!", to_file=True)
             return
         else:
-            # todo: logger need to add log to file method
-            # self.write_log(f"Number of traces: {len(res)}")
+            log.debug(f"Number of traces: {len(data)}", to_file=True)
             return t_processor.load_from_json(data)
 
     def process_trace(

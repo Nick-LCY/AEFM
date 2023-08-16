@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from utils.logger import log
 from data_collector.models import MemUsage
 from .models import CpuUsage, MemUsage
 from utils.prom_fetcher import PromFetcher
@@ -47,8 +47,7 @@ class PromHardwareCollector(HardwareCollectorInterface):
             CpuUsage: CPU usage records.
         """    
         response = self.fetcher.fetch_cpu_usage(microservices, start_time, end_time)
-        # todo: logger need to add log to file method
-        # self.write_log(f"Fetch CPU usage from: {response.url}")
+        log.debug(f"Fetch CPU usage from: {response.url}", to_file=True)
         usage = response.json()
         cpu_usage = CpuUsage()
         if usage["data"] and usage["data"]["result"]:
@@ -73,8 +72,7 @@ class PromHardwareCollector(HardwareCollectorInterface):
             CpuUsage: Memory usage records.
         """    
         response = self.fetcher.fetch_mem_usage(microservices, start_time, end_time)
-        # todo: logger need to add log to file method
-        # self.write_log(f"Fetch memory usage from: {response.url}")
+        log.debug(f"Fetch memory usage from: {response.url}", to_file=True)
         usage = response.json()
         mem_usage = MemUsage()
         if usage["data"] and usage["data"]["result"]:

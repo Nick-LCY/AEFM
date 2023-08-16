@@ -1,6 +1,11 @@
 import atexit, itertools, time, sys, shutil, os, inspect
 from contextlib import contextmanager
 from termcolor import colored
+from utils.files import create_folder, write_to_file
+import os
+from datetime import datetime
+
+
 class Logger(object):
     _levels = {
         "debug": 0,
@@ -191,19 +196,29 @@ class Logger(object):
             elif r == "q":
                 sys.exit(-1)
 
-    def debug(self, text, update=False, spinner=True, once=None):
+    def debug(self, text, update=False, spinner=True, once=None, to_file=False):
+        if to_file:
+            return self.log_to_file(text, "debug")
         return self.log(text, "debug", update, spinner, once)
 
-    def info(self, text, update=False, spinner=True, once=None):
+    def info(self, text, update=False, spinner=True, once=None, to_file=False):
+        if to_file:
+            return self.log_to_file(text, "info")
         return self.log(text, "info", update, spinner, once)
 
-    def key(self, text, update=False, spinner=True, once=None):
+    def key(self, text, update=False, spinner=True, once=None, to_file=False):
+        if to_file:
+            return self.log_to_file(text, "key")
         return self.log(text, "key", update, spinner, once)
 
-    def warn(self, text, update=False, spinner=True, once=None):
+    def warn(self, text, update=False, spinner=True, once=None, to_file=False):
+        if to_file:
+            return self.log_to_file(text, "warn")
         return self.log(text, "warn", update, spinner, once)
 
-    def error(self, text, update=False, spinner=True, once=None):
+    def error(self, text, update=False, spinner=True, once=None, to_file=False):
+        if to_file:
+            return self.log_to_file(text, "error")
         return self.log(text, "error", update, spinner, once)
 
     def error_exit(self, error_msg):
@@ -227,6 +242,16 @@ class Logger(object):
         # emit an empty line, as last log has no carriage return
         if self._last_is_update:
             print()
+
+    def set_log_file_path(self, path: str):
+        foler = os.path.split(path)
+        create_folder(foler)
+        self.log_file_path = path
+
+    def log_to_file(self, text: str, level: str):
+        date = datetime.now().strftime("[%Y%b%d|%X]")
+        content = f"{'<' + level + '>':8}{date} {text}"
+        write_to_file(self.log_file_path, content, append=True)
 
 
 log = Logger()
