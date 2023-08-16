@@ -1,4 +1,33 @@
 import pandas as pd
+from typing import Any
+
+
+class TestCaseData:
+    """A data structure that used to staore test case information."""
+
+    def __init__(
+        self,
+        start_time: float,
+        end_time: float,
+        name: str,
+        additional_columns: dict[str, Any] = None,
+        operation: str = None,
+    ) -> None:
+        """A data structure that used to staore test case information.
+
+        Args:
+            start_time (float): Start time of current test case.
+            end_time (float): End time of current test case.
+            name (str): Name of this test case.
+            additional_columns (dict[str, Any], optional): Additional columns th
+            at needs to be saved in output data of collector. Defaults to None.
+            operation (str, optional): Jaeger operation. Defaults to None.
+        """
+        self.start_time = start_time
+        self.end_time = end_time
+        self.operation = operation
+        self.name = name
+        self.additional_columns = additional_columns
 
 
 class UsageRecords:
@@ -57,8 +86,8 @@ class UsageRecords:
 
 
 class CpuUsage(UsageRecords):
-    """For CPU usage records"""    
+    """For CPU usage records."""
 
 
 class MemUsage(UsageRecords):
-    """For memory capacity usage records"""    
+    """For memory capacity usage records."""

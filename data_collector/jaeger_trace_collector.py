@@ -1,35 +1,9 @@
-from abc import ABC, abstractmethod
 from utils.jaeger_fetcher import JaegerFetcher
 import json
 import pandas as pd
 import utils.trace_processor as t_processor
 from utils.logger import log
-
-
-class TraceCollectorInterface(ABC):
-    """Abstract interface of trace collector. The collector should have two abil
-    ities: collect trace data with ``collect_trace`` method and process them wit
-    h ``process_trace`` method.
-    """
-
-    @abstractmethod
-    def collect_trace(
-        self,
-        start_time: float,
-        end_time: float,
-        operation: str = None,
-        limit: int = 1000,
-    ) -> pd.DataFrame:
-        """Collect trace data. And parse them into Dataframe object."""
-
-    @abstractmethod
-    def process_trace(
-        self, collected_data: pd.DataFrame
-    ) -> tuple[pd.DataFrame, pd.DataFrame]:
-        """Process collected data, return statistical and original data in a tup
-        le. The first item of tuple is statistical data, and the second one is r
-        aw data.
-        """
+from .interfaces import TraceCollectorInterface
 
 
 class JaegerTraceCollector(TraceCollectorInterface):

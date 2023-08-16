@@ -1,24 +1,7 @@
-from abc import ABC, abstractmethod
 from utils.logger import log
-from data_collector.models import MemUsage
 from .models import CpuUsage, MemUsage
+from .interfaces import HardwareCollectorInterface
 from utils.prom_fetcher import PromFetcher
-
-
-class HardwareCollectorInterface(ABC):
-    """Hardware collector interface, will return usage records."""
-
-    @abstractmethod
-    def collect_cpu_usage(
-        self, microservices: list[str], start_time: float, end_time: float
-    ) -> CpuUsage:
-        """Collect CPU usage, range: 0 - 1."""
-
-    @abstractmethod
-    def collect_mem_usage(
-        self, microservices: list[str], start_time: float, end_time: float
-    ) -> MemUsage:
-        """Collect memory usage, range: 0 - 1."""
 
 
 class PromHardwareCollector(HardwareCollectorInterface):
@@ -45,7 +28,7 @@ class PromHardwareCollector(HardwareCollectorInterface):
 
         Returns:
             CpuUsage: CPU usage records.
-        """    
+        """
         response = self.fetcher.fetch_cpu_usage(microservices, start_time, end_time)
         log.debug(f"Fetch CPU usage from: {response.url}", to_file=True)
         usage = response.json()
@@ -70,7 +53,7 @@ class PromHardwareCollector(HardwareCollectorInterface):
 
         Returns:
             CpuUsage: Memory usage records.
-        """    
+        """
         response = self.fetcher.fetch_mem_usage(microservices, start_time, end_time)
         log.debug(f"Fetch memory usage from: {response.url}", to_file=True)
         usage = response.json()

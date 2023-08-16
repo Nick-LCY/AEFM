@@ -1,13 +1,5 @@
-from abc import ABC, abstractmethod
 from utils.logger import log
-
-
-class ThroughputCollector(ABC):
-    """Throughput collector interface, will return workload throughput."""
-
-    @abstractmethod
-    def collect(self, test_case_name: str) -> float:
-        """Collect and return throughput."""
+from .interfaces import ThroughputCollectorInterface
 
 
 class WrkFetcher:
@@ -37,7 +29,7 @@ class WrkFetcher:
         return throughput
 
 
-class WrkThroughputCollector:
+class WrkThroughputCollector(ThroughputCollectorInterface):
     """Throughput collector that based on wrk."""
 
     def __init__(self, wrk_fetcher: WrkFetcher) -> None:
