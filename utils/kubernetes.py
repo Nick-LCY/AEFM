@@ -61,7 +61,7 @@ def delete_by_yaml(
         set to True.
     """
     # TODO: Need to find a better way to delete kubernetes components.
-    os.system(f"kubectl delete -Rf {folder}")
+    os.system(f"kubectl delete -Rf {folder} >/dev/null")
     if wait:
         if namespace is None:
             raise BaseException("No namespace spcified")

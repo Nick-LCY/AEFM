@@ -119,7 +119,6 @@ class BaseDeployer(DeployerInterface):
             application (str): Which application you are using.
             port (int): Entrance port of that application, used to write data.
         """
-        delete_by_yaml(self.tmp_infra_path)
         self.prepare_infra_yaml().deploy_infra_yaml()
         self.prepare_under_test_yaml().deploy_under_test_yaml()
 
@@ -145,5 +144,4 @@ class BaseDeployer(DeployerInterface):
             replicas (dict[str, int]): Dict of replicas, key is deployment name
             and value is the replicas of that deployment.
         """
-        delete_by_yaml(self.tmp_under_test_path)
         self.prepare_under_test_yaml(replicas).deploy_under_test_yaml()
