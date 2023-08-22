@@ -41,6 +41,9 @@ class KubernetesYAMLs:
                     yaml_objs = yaml.load_all(file, Loader=yaml.CLoader)
                     yaml_list.extend([x for x in yaml_objs if x is not None])
             self.yamls: list[dict] = yaml_list
+        else:
+            # todo: Exception management
+            raise BaseException("Folder/file not found")
 
     def update(
         self,
@@ -167,8 +170,9 @@ class KubernetesYAMLs:
         Returns:
             KubernetesYAMLs: Return self for chaining.
         """
+        node_strs = [str(x) for x in nodes]
         node_affinity = yaml.load(
-            _AFFINITY_TEMPLATE.replace("%%%", f'[{", ".join(nodes)}]'),
+            _AFFINITY_TEMPLATE.replace("%%%", f'[{", ".join(node_strs)}]'),
             yaml.CLoader,
         )
         path = "spec.template.spec.affinity"

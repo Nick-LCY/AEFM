@@ -55,7 +55,7 @@ class BaseDeployer(DeployerInterface):
         delete_path(self.tmp_infra_path)
         create_folder(self.tmp_infra_path)
         # Edit infra YAMLs, save them to tmp folder
-        infra_yamls = KubernetesYAMLs(f"{self.yaml_repo}/non-test")
+        infra_yamls = KubernetesYAMLs(f"{self.yaml_repo}/infra")
         infra_yamls.update(
             "metadata.namespace", self.namespace, target_kind=None
         ).assign_affinity(self.infra_nodes).update(
@@ -92,7 +92,7 @@ class BaseDeployer(DeployerInterface):
         delete_path(self.tmp_under_test_path)
         create_folder(self.tmp_under_test_path)
         # Edit under_test YAMLs, save them to tmp folder
-        under_test = KubernetesYAMLs(f"{self.yaml_repo}/test")
+        under_test = KubernetesYAMLs(f"{self.yaml_repo}/under_test")
         under_test.base_yaml_preparation(
             self.namespace, self.pod_spec, self.app_img
         ).assign_affinity(self.testbed_nodes).assign_containers(replicas).update(

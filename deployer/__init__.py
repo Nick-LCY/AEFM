@@ -1,1 +1,1 @@
-from intrefaces import *
+from .intrefaces import *
