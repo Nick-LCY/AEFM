@@ -28,9 +28,9 @@ class Node:
             Node: Corresponding object.
         """        
         name = data["name"]
-        role = data["role"]
+        roles = data["roles"]
         ip = data["ip"] if "ip" in data else None
-        return Node(name, role, ip)
+        return Node(name, roles, ip)
 
     def get_roles(self) -> str:
         """Get node roles.

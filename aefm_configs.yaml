@@ -1,0 +1,82 @@
+# Where to store files
+file_paths:
+  # Output data of data collector
+  collector_data: data
+  # Log files
+  log: log
+  # YAML repository that saves YAML files of different applications
+  yaml_repo: yaml_repository/hotel_reservation
+
+# Namespace used in this experiment
+namespace: hotel-reserv
+# Docker image used to create containers
+app_img: nicklin9907/erms:hotelreservation-1.0
+# Prometheus API address
+prometheus_host: http://localhost:30090
+# Jaeger API address
+jaeger_host: http://localhost:30068
+# Available nodes, based on their roles, will assign different microservices on them.
+nodes:
+  # Name of nodes
+- name: node01
+  # List of roles, defaultly available: testbed and infra
+  roles:
+  - testbed
+  - infra
+  # IP address, optional
+  ip: "10.110.111.10"
+- name: node02
+  roles:
+  - testbed
+- name: node03
+  roles:
+  - infra
+# Pod resource limiation, same as requests/limits part in Kubernetes
+pod_spec:
+  cpu_size: 0.1
+  mem_size: 200Mi
+# By default, config loader will generate test cases cover all possible combinations
+# of all following 
+test_cases:
+  orders:
+  - workload
+  - mem_capacity
+  - cpu
+  - sample_customize
+  rounds:
+    min: 1
+    max: 5
+    step: 1
+  workload:
+    configs:
+      threads: 1
+      connection: 1
+      throughput: 1
+      script_path: example_script
+      url: http://example.com
+    range:
+      min: 1
+      max: 20
+      step: 1
+
+  interferences:
+    mem_capacity:
+      configs:
+        cpu_size: 0.01
+        mem_size: 4Gi
+      range:
+      - 7
+      - 10
+    cpu:
+      configs:
+        cpu_size: 1
+        mem_size: 200Mi
+      range:
+        min: 1
+        max: 10
+        step: 1
+  sample_customize:
+    - 1
+    - 2
+    - 3
+    - 4

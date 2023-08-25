@@ -1,5 +1,7 @@
-from collections.abc import Callable
+from abc import abstractmethod, ABC
 from typing import Any, Literal
+from collections.abc import Callable
+from utils.logger import log
 
 
 class _Events(object):
@@ -21,7 +23,7 @@ class _Events(object):
         ],
     ) -> Any:
         if not hasattr(self, event):
-            # todo: exception management
+            log.warn(f'Event: "{event}" doesn\'t have a handler.')
             return
         return self.__getattribute__(event)()
 
@@ -70,31 +72,17 @@ class _Data(object):
         return self.__getattribute__(name)
 
 
-class ExperimentManager(object):
-    """Experiment manager, used to manage data, events and components of experim
-    ent. To access data, events and components, please use ``manager.data``, ``m
-    anager.events`` and ``manager.componenets``.
-    """
-
+class ManagerInterface(ABC):
+    """An experiment manager must have ``run()`` method. Which represents the wo
+    rkflow of an experiment. It also have other three required attributes: ``events``,
+    ``componenets`` and ``data``. They are used for globally manage data and met
+    hods.
+    """    
     def __init__(self) -> None:
         self.events = _Events()
         self.components = _Components()
         self.data = _Data()
 
+    @abstractmethod
     def run(self):
-        """A built-in experiment process. You can customize your own experiment
-        process by trigger different events.
-        """
-        trigger = self.events.trigger
-        trigger("start_experiment")
-        trigger("init_environment")
-        trigger("generate_test_cases")
-        for test_case in self.data.get("test_cases"):
-            self.data.set("current_test_case", test_case)
-            trigger("start_single_test_case")
-            trigger("start_data_collection")
-            trigger("update_environment")
-        trigger("end_experiment")
-
-
-manager = ExperimentManager()
+        """Workflow of an experiment."""

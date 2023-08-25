@@ -1,3 +1,4 @@
+import configs
 from .events import register
 from . import manager
 from deployer import DeployerInterface
@@ -18,25 +19,24 @@ from data_collector.prom_hardware_collector import PromHardwareCollector
 
 @register(event="start_experiment")
 def start_experiment_handler():
-    configs = load_configs()
-    manager.data.set("configs", configs)
-    manager.components.set("deployer", BaseDeployer(configs))
-    wrk_config = WrkConfig(configs)
+    configs_obj = configs.load_configs()
+    manager.data.set("configs", configs_obj)
+    manager.components.set("deployer", BaseDeployer(configs_obj))
+    wrk_config = WrkConfig(configs_obj)
     manager.components.set("workload_generator", WrkWorkloadGenerator(wrk_config))
-    jaeger_fetcher = JaegerFetcher(configs)
+    jaeger_fetcher = JaegerFetcher(configs_obj)
     jaeger_collector = JaegerTraceCollector(jaeger_fetcher)
-    wrk_fetcher = WrkFetcher(configs)
+    wrk_fetcher = WrkFetcher(configs_obj)
     wrk_collector = WrkThroughputCollector(wrk_fetcher)
-    prom_fetcher = PromFetcher(configs)
+    prom_fetcher = PromFetcher(configs_obj)
     prom_collector = PromHardwareCollector(prom_fetcher)
     data_collector = BaseDataCollector(
-        configs, jaeger_collector, prom_collector, wrk_collector
+        configs_obj, jaeger_collector, prom_collector, wrk_collector
     )
     manager.components.set("data_collector", data_collector)
     inf_generator()
-    configs()
+    configs_obj()
     timer()
-    file_preparation()
 
 
 @register(event="init_environment")
@@ -48,9 +48,11 @@ def init_environment_handler():
     deployer.reload(configs["replicas"])
 
 
-@register(event="generate_test_cases_handler")
+@register(event="generate_test_cases")
 def generate_test_cases_handler():
-    manager.data.set("test_cases", generate_test_cases())
+    configs_obj = manager.data.get("configs")
+    assert isinstance(configs_obj, configs.Configs)
+    manager.data.set("test_cases", configs_obj.test_cases)
 
 
 @register(event="start_single_test_case")
