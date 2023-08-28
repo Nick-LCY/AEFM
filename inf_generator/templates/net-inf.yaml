@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  script: |
+    findFlag=false
+    for i in `cat /root/nodes`;
+    do
+        if [ "$findFlag" == true ];
+        then
+            targetIP=$i
+        fi
+
+        if [[ "$i" == "$MY_IP" ]];
+        then
+            findFlag=true;
+        else
+            findFlag=false;
+        fi
+    done
+
+    echo "Target IP: $targetIP"
+
+    iperf3 -c $targetIP -p 34567 -t $DURATION -b $THROUGHPUT -P $CLIENTS
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: interference
+spec:
+  selector:
+    matchLabels:
+      app: interference
+  template:
+    metadata:
+      labels:
+        app: interference
+    spec:
+      containers:
+      - command:
+        - iperf3
+        args:
+        - -s
+        - -p
+        - "34567"
+        image: networkstatic/iperf3
+        imagePullPolicy: IfNotPresent
+        name: server
+        ports:
+        - containerPort: 34567
+          hostPort: 34567
+      - command:
+        - bash
+        args:
+        - /root/launch.sh
+        image: networkstatic/iperf3
+        name: client
+        env:
+        - name: MY_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: THROUGHPUT
+        - name: DURATION
+        - name: CLIENTS
+        volumeMounts:
+        - name: launch-script
+          mountPath: /root
+      volumes:
+      - name: launch-script
+        configMap:
+          items:
+          - key: script
+            path: launch.sh
+          - key: data
+            path: nodes

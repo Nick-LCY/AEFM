@@ -1,7 +1,6 @@
 import os, json
 from time import sleep
 from kubernetes import utils, config, client
-from typing import Optional
 from .logger import log
 
 config.load_kube_config()
@@ -9,9 +8,9 @@ config.load_kube_config()
 
 def deploy_by_yaml(
     folder: str,
-    wait: Optional[bool] = False,
-    namespace: Optional[str] = None,
-    timeout: Optional[int] = 300,
+    wait: bool = False,
+    namespace: str = None,
+    timeout: int = 300,
 ):
     """Deploy all YAMLs under certain ``folder``.
 
@@ -39,11 +38,18 @@ def deploy_by_yaml(
         wait_deployment(namespace, timeout)
 
 
+def delete_by_name(name: str, namespace: str, wait: bool = False, timeout: int = 300):
+    api_client = client.AppsV1Api()
+    api_client.delete_namespaced_deployment(name, namespace)
+    if wait:
+        wait_deletion(namespace, timeout)
+
+
 def delete_by_yaml(
     folder: str,
-    wait: Optional[bool] = False,
-    namespace: Optional[str] = None,
-    timeout: Optional[int] = 300,
+    wait: bool = False,
+    namespace: str = None,
+    timeout: int = 300,
 ):
     """Delete kubernetes components by YAMLs under certain ``folder``.
 
@@ -74,7 +80,7 @@ def wait_deployment(namespace: str, timeout: int):
     Args:
         namespace (str): Where to monitor pods.
         timeout (int): How long should the program wait.
-    """    
+    """
     api = client.CoreV1Api()
     used_time = 0
     deployment_finished_flag = False
@@ -116,7 +122,7 @@ def wait_deletion(namespace: str, timeout: int):
     Args:
         namespace (str): Where to monitor pods.
         timeout (int): How long should the program wait.
-    """    
+    """
     api = client.CoreV1Api()
     used_time = 0
     deletion_finished_flag = False
