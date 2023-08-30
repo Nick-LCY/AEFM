@@ -46,10 +46,13 @@ class Configs:
                         file_paths.__setattr__(key, data[key])
             return file_paths
 
+        def __getitem__(self, key):
+            return self.__getattribute__(key)
+
     def __init__(self) -> None:
         """Help you to manage configs of AEFM. By default, ``file_paths``, ``nodes``,
-        ``pod_spec``, ``test_cases``, ``namespace`` and ``app_img`` will be avai
-        lable to use, but you can also set your customized config items.
+        ``pod_spec``, ``test_cases``, ``namespace``, ``duation`` and ``app_img``
+        will be available to use, but you can also set your customized config items.
         """
         self.file_paths: Configs.FilePaths
         self.nodes: dict[str, list[Node]] = {}
@@ -58,6 +61,7 @@ class Configs:
 
         self.namespace: str
         self.app_img: str
+        self.duration: int
 
     @staticmethod
     def load_from_yaml(config_yaml: dict[str]) -> "Configs":
@@ -103,6 +107,9 @@ class Configs:
             list[Node]: Selected nodes.
         """
         return self.nodes[role]
+
+    def __getitem__(self, key):
+        return self.__getattribute__(key)
 
 
 def load_configs() -> Configs:
