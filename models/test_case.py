@@ -35,6 +35,24 @@ class TestCase:
             self.inf_configs: list[dict] = []
             self.inf_count: list[int] = []
 
+        def __iter__(self) -> "TestCase.Interference":
+            self.idx = 0
+            return self
+
+        def __next__(self) -> tuple[str, dict, int]:
+            if self.idx >= len(self.inf_types):
+                raise StopIteration
+            result = (
+                self.inf_types[self.idx],
+                self.inf_configs[self.idx],
+                self.inf_count[self.idx],
+            )
+            self.idx += 1
+            return result
+
+        def __len__(self) -> int:
+            return len(self.inf_types)
+
         def copy(self) -> "TestCase.Interference":
             """Return a copy of this object.
 
@@ -61,7 +79,7 @@ class TestCase:
         Args:
             key (str): Additional data name.
             value (Any): Additional data value.
-        """        
+        """
         self.additional[key] = value
 
     def set_workload(self, workload: "TestCase.Workload") -> None:
@@ -69,7 +87,7 @@ class TestCase:
 
         Args:
             workload (TestCase.Workload): Workload configuration.
-        """        
+        """
         self.workload = workload
 
     def set_round(self, round: int) -> None:
@@ -77,7 +95,7 @@ class TestCase:
 
         Args:
             round (int): A.K.A. repeat.
-        """        
+        """
         self.round = round
 
     def append_marker(self, marker: str) -> None:
@@ -86,7 +104,7 @@ class TestCase:
 
         Args:
             marker (str): Name of marker.
-        """        
+        """
         self.markers.append(marker)
 
     def append_inf(self, inf_type: str, inf_configs: dict, inf_count: int) -> None:
@@ -96,7 +114,7 @@ class TestCase:
             inf_type (str): Type of interference.
             inf_configs (dict): Configs of interference.
             inf_count (int): Amount (by N.O. of pods) of interference.
-        """        
+        """
         self.interferences.inf_types.append(inf_type)
         self.interferences.inf_configs.append(inf_configs)
         self.interferences.inf_count.append(inf_count)
@@ -115,20 +133,33 @@ class TestCase:
         obj.additional = deepcopy(self.additional)
         return obj
 
+    def generate_name(self) -> str:
+        content = f"round={self.round}|" if self.round is not None else ""
+        content += (
+            f"throughput={self.workload.throughput}|"
+            if self.workload is not None
+            else ""
+        )
+        for inf_type, _, inf_count in self.interferences:
+            content += f"{inf_type}={inf_count}|"
+        for key in self.additional:
+            content += f"{key}={self.additional[key]}|"
+        return content[:-1]
+    
+    def to_dict(self) -> dict[str, Any]:
+        result = {}
+        if self.round is not None:
+            result["round"] = self.round
+        if self.workload is not None:
+            result["throughput"] = self.workload.throughput
+        for inf_type, _, inf_count in self.interferences:
+            result[inf_type] = inf_count
+        for key in self.additional:
+            result[key] = self.additional[key]
+        return result
+
     def __repr__(self) -> str:
         return str(self)
 
     def __str__(self) -> str:
-        content = f"["
-        content += f"round: {self.round}, " if self.round is not None else ""
-        content += (
-            f"throughput: {self.workload.throughput}, "
-            if self.workload is not None
-            else ""
-        )
-        for inf_type, inf_count in zip(
-            self.interferences.inf_types, self.interferences.inf_count
-        ):
-            content += f"{inf_type}: {inf_count}, "
-        content += f"{self.additional}, " if len(self.additional) != 0 else ""
-        return content[:-2] + "]"
+        return "[" + self.generate_name().replace("|", ", ").replace("=", ": ") + "]"

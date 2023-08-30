@@ -52,6 +52,9 @@ class TestCases:
             workload.range = _load_range(data["range"])
             return workload
 
+        def __getitem__(self, key):
+            return self.__getattribute__(key)
+
     class Interference:
         """Interference configs with its range."""
 
@@ -111,7 +114,7 @@ class TestCases:
             test_cases.__setattr__(key, data[key])
         return test_cases
 
-    def generate(self, force: bool = False) -> None:
+    def generate(self, force: bool = False) -> list[TestCase]:
         """Based on current TestCases object, generate all test cases configs an
         d save them as a list. The generation order will follow the ``orders`` p
         art of configs, the first item in orders will be looped first. If orders
@@ -194,6 +197,10 @@ class TestCases:
                         )
             test_cases[-1].append_marker(order)
         self.generated_test_cases = test_cases
+        return test_cases
+    
+    def __len__(self) -> int:
+        return len(self.generated_test_cases)
 
     def iter(self, workflow: Callable[[TestCase], None], manager: ManagerInterface):
         """Iterate all test cases.
@@ -205,7 +212,9 @@ class TestCases:
             manager (ManagerInterface): Current experiment manager.
         """
         self.generate()
-        for test_case in self.generated_test_cases:
+        for idx, test_case in enumerate(self.generated_test_cases):
             workflow(test_case)
+            if idx + 1 < len(self.generated_test_cases):
+                manager.data.set("next_test_case", self.generated_test_cases[idx + 1])
             for marker in test_case.markers:
                 manager.events.trigger(f"end_{marker}")
