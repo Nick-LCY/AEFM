@@ -1,6 +1,6 @@
 from typing import Union, Callable
 from .test_case import TestCase
-from experiment.interfaces import ManagerInterface
+from manager.interfaces import ManagerInterface
 
 
 def _load_range(data: Union[list[int], dict[str, int]]) -> list[int]:
