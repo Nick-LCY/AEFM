@@ -4,7 +4,7 @@ from .wrk_throughput_collector import WrkThroughputCollector
 from .models import TestCaseData
 from .interfaces import DataCollectorInterface
 from utils.logger import log
-from utils.files import append_csv_to_file
+from utils.files import append_csv_to_file, create_folder
 import traceback, multiprocessing
 import pandas as pd
 
@@ -35,11 +35,12 @@ class BaseDataCollector(DataCollectorInterface):
             er async mode. Defaults to 10.
         """
         self.data_path = data_path
+        create_folder(data_path)
         self.trace_collector = trace_collector
         self.hardware_collector = hardware_collector
         self.throughput_collector = throughput_collector
         self.max_processes = max_processes
-        self.proc_pool = multiprocessing.Pool(max_processes)
+        self.proc_pool = None
 
     def collect_async(self, test_case_data: TestCaseData) -> None:
         """Collect throughput asynchronously, traces and hardware resource usage
@@ -48,6 +49,8 @@ class BaseDataCollector(DataCollectorInterface):
         Args:
             test_case_data (TestCaseData): _description_
         """
+        if self.proc_pool is None:
+            self.proc_pool = multiprocessing.Pool(self.max_processes)
         self.proc_pool.apply_async(self.collect, (test_case_data,))
 
     def collect(self, test_case_data: TestCaseData) -> None:
@@ -62,9 +65,6 @@ class BaseDataCollector(DataCollectorInterface):
             throughput_data = pd.DataFrame([{"throughput": throughput_data}])
         except:
             log.error(f"{test_case_data.name} throughput collection failed!")
-            log.error(
-                f"{test_case_data.name} throughput collection failed!", to_file=True
-            )
             traceback.print_exc()
             return
 
@@ -77,12 +77,11 @@ class BaseDataCollector(DataCollectorInterface):
             statistical_data, raw_data = self.trace_collector.process_trace(trace_data)
         except:
             log.error(f"{test_case_data.name} trace collection failed!")
-            log.error(f"{test_case_data.name} trace collection failed!", to_file=True)
             traceback.print_exc()
             return
 
         try:
-            microservices = statistical_data["microservice"].unique().tolist()
+            microservices = statistical_data["microservice"].dropna().unique().tolist()
             cpu_data = (
                 self.hardware_collector.collect_cpu_usage(
                     microservices, test_case_data.start_time, test_case_data.end_time
@@ -100,10 +99,6 @@ class BaseDataCollector(DataCollectorInterface):
             hardware_data = cpu_data.merge(mem_data)
         except:
             log.error(f"{test_case_data.name} hardware resource collection failed!")
-            log.error(
-                f"{test_case_data.name} hardware resource collection failed!",
-                to_file=True,
-            )
             traceback.print_exc()
             return
 
@@ -128,8 +123,8 @@ class BaseDataCollector(DataCollectorInterface):
 
         except:
             log.error(f"{test_case_data.name} data save failed!")
-            log.error(f"{test_case_data.name} data save failed!", to_file=True)
             traceback.print_exc()
+        log.info(f"Data collection of {test_case_data.name} success!")
 
     def wait(self) -> None:
         """Wait until all async data collection processes done."""

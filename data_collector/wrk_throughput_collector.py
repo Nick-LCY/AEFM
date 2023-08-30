@@ -51,5 +51,5 @@ class WrkThroughputCollector(ThroughputCollectorInterface):
             float: Throughput, unit: requests/second.
         """
         throughput = self.fetcher.fetch(test_case_name)
-        log.debug("Real throughput: " + throughput)
+        log.debug(f"{__file__}: Real throughput: {throughput}")
         return throughput

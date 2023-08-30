@@ -30,14 +30,14 @@ class PromHardwareCollector(HardwareCollectorInterface):
             CpuUsage: CPU usage records.
         """
         response = self.fetcher.fetch_cpu_usage(microservices, start_time, end_time)
-        log.debug(f"Fetch CPU usage from: {response.url}", to_file=True)
+        log.debug(f"{__file__}: Fetch CPU usage from: {response.url}", to_file=True)
         usage = response.json()
         cpu_usage = CpuUsage()
         if usage["data"] and usage["data"]["result"]:
             for data in usage["data"]["result"]:
                 pod = str(data["metric"]["pod"])
                 microservice = "-".join(pod.split("-")[:-2])
-                usage = max([float(v) for v in data["values"]])
+                usage = max([float(v[1]) for v in data["values"]])
                 cpu_usage.set(microservice, pod, usage)
         return cpu_usage
 
@@ -55,13 +55,13 @@ class PromHardwareCollector(HardwareCollectorInterface):
             CpuUsage: Memory usage records.
         """
         response = self.fetcher.fetch_mem_usage(microservices, start_time, end_time)
-        log.debug(f"Fetch memory usage from: {response.url}", to_file=True)
+        log.debug(f"{__file__}: Fetch memory usage from: {response.url}", to_file=True)
         usage = response.json()
         mem_usage = MemUsage()
         if usage["data"] and usage["data"]["result"]:
             for data in usage["data"]["result"]:
                 pod = str(data["metric"]["pod"])
                 microservice = "-".join(pod.split("-")[:-2])
-                usage = max([float(v) for v in data["values"]])
+                usage = max([float(v[1]) for v in data["values"]])
                 mem_usage.set(microservice, pod, usage)
         return mem_usage

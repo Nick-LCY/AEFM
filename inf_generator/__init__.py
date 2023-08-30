@@ -1,1 +1,1 @@
-from interfaces import *
+from .interfaces import *

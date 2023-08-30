@@ -16,12 +16,11 @@ class WrkConfig:
         script: str,
         rate: int,
     ) -> None:
-        """Command line args of wrk programs, please check wrk manual for more d
-        etails. https://github.com/giltene/wrk2
+        """Command line args of wrk programs, please check wrk manual for more
+        details, please visit: https://github.com/giltene/wrk2
 
         Args:
-            wrk_path (str): Where to find wrk program. If it is already in "PATH
-            ", simply use `wrk` or `wrk2` is OK.
+            wrk_path (str): Where to find wrk program. If it is already in "PATH", simply using `wrk` or `wrk2` is OK.
             url (str): Target website.
             threads (int): Number of threads to use.
             connections (int): Connections to keep open.

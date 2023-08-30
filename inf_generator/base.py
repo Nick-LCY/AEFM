@@ -1,6 +1,7 @@
-from interfaces import InfGeneratorInterface
-import os, pathlib
+from .interfaces import InfGeneratorInterface
+import os, pathlib, yaml
 from utils.kubernetes import deploy_by_yaml, wait_deletion, delete_by_name
+from utils.files import delete_path
 from models import Node
 from utils.kubernetes_YAMLs import KubernetesYAMLs
 
@@ -13,7 +14,7 @@ _AFFINITY_TEMPLATE = (
     "        operator: In\n"
     "        values: %%%\n"
 )
-TEMPLATE_FOLDER = pathlib.Path(__file__).parent.resolve()
+TEMPLATE_FOLDER = pathlib.Path(__file__).parent.resolve().joinpath("templates")
 
 
 class BaseInfGenerator(InfGeneratorInterface):
@@ -38,39 +39,42 @@ class BaseInfGenerator(InfGeneratorInterface):
         self.namespace = namespace
         self.command = {
             "cpu": "/ibench/src/cpu",
-            "capacity": "/ibench/src/memCap",
-            "bandwidth": "/ibench/src/memBw",
+            "mem_capacity": "/ibench/src/memCap",
+            "mem_bandwidth": "/ibench/src/memBw",
             "network": "",
         }[self.inf_type]
 
         match self.inf_type:
             case "cpu":
                 self.args = [f"{duration}s"]
-            case "capacity":
+            case "mem_capacity":
                 self.args = [f"{duration}s", "wired", "100000s"]
-            case "bandwidth":
+            case "mem_bandwidth":
                 self.args = [f"{duration}s"]
             case "network":
                 self.args = [configs["throughput"], duration]
 
     def generate(self, count: int, nodes: list[Node], wait: bool = True) -> None:
         self.deployed_nodes = nodes
+        delete_path("tmp/net-interference")
+        delete_path("tmp/interference")
+        self.clear(wait=False)
         if self.inf_type == "network":
             self._generate_network_inf(nodes, count)
             deploy_by_yaml("tmp/net-interference", wait, self.namespace)
         else:
-            for node in nodes:
-                self._generate_single_interference(node, count)
+            for node, name in zip(nodes, self._get_inf_names()):
+                self._generate_single_interference(node, name, count)
             deploy_by_yaml("tmp/interference", wait, self.namespace)
 
     def _get_inf_names(self):
         if self.inf_type == "network":
             cm_name = "-".join(self.deployed_nodes) + "-launch-script"
-            ds_name = "network-inf-" + "-".join(self.deployed_nodes)
+            ds_name = "network-" + "-".join(self.deployed_nodes)
             return [cm_name, ds_name]
         names = []
         for node in self.deployed_nodes:
-            names.append(f"{self.inf_type}-{node}")
+            names.append(f"{self.inf_type}-{node}".replace("_", "-"))
         return names
 
     def clear(self, wait: bool = False):
@@ -87,11 +91,13 @@ class BaseInfGenerator(InfGeneratorInterface):
 
     def _generate_network_inf(self, nodes: list[Node], count: int):
         nodes_str = [str(x) for x in nodes]
-        cm_name = "-".join(nodes_str) + "-launch-script"
-        ds_name = "network-inf-" + "-".join(nodes_str)
+        cm_name, ds_name = self._get_inf_names()
 
         k8s_yaml = KubernetesYAMLs(TEMPLATE_FOLDER.joinpath("net-inf.yaml"))
-        affinity = _AFFINITY_TEMPLATE.replace("%%%", f"[{','.join(nodes_str)}]")
+        affinity = yaml.load(
+            _AFFINITY_TEMPLATE.replace("%%%", f"[{','.join(nodes_str)}]"),
+            Loader=yaml.CLoader,
+        )
         ds_pairs = [
             ("metadata.namespace", self.namespace),
             ("metadata.name", ds_name),
@@ -118,16 +124,12 @@ class BaseInfGenerator(InfGeneratorInterface):
 
         k8s_yaml.save("tmp/net-interference")
 
-    def _generate_single_interference(self, node: Node, count: int):
-        """Create a set of pods with the same CPU size and memory size on a single node
-
-        Args:
-            node (str): Specify which node is going to use to deploy pods
-            replicas (int): Number of replicas of this CPU interference deployment
-        """
-        name = f"{self.inf_type}-{node}"
+    def _generate_single_interference(self, node: Node, name: str, count: int):
         k8s_yaml = KubernetesYAMLs(TEMPLATE_FOLDER.joinpath("interference.yaml"))
-        affinity = _AFFINITY_TEMPLATE.replace("%%%", f"[{node}]")
+        affinity = yaml.load(
+            _AFFINITY_TEMPLATE.replace("%%%", f"[{node}]"),
+            Loader=yaml.CLoader,
+        )
         pairs = [
             ("metadata.name", name),
             ("metadata.namespace", self.namespace),
@@ -140,12 +142,3 @@ class BaseInfGenerator(InfGeneratorInterface):
         for pair in pairs:
             k8s_yaml.update(pair[0], pair[1])
         k8s_yaml.save(f"tmp/interference/{name}.yaml")
-
-
-class BusyInf:
-    def generateInterference(self, replicas, wait=False):
-        """Create a set of pods with the same CPU size and memory size on target nodes
-
-        Args:
-            replicas (int): Number of replicas of this CPU interference deployment
-        """

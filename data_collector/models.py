@@ -79,7 +79,8 @@ class UsageRecords:
             ms_records = self.records[microservice]
             records.append(
                 pd.DataFrame(
-                    ms_records.keys(), ms_records.values(), columns=["pod", "usage"]
+                    zip(ms_records.keys(), ms_records.values()),
+                    columns=["pod", "usage"],
                 ).assign(microservice=microservice)
             )
         return pd.concat(records)[["microservice", "pod", "usage"]]

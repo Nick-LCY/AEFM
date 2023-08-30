@@ -1,5 +1,6 @@
 from models import TestCases, TestCase
 from .interfaces import ManagerInterface, _Events, _Components, _Data
+from utils.logger import log
 
 
 class BaseManager(ManagerInterface):
@@ -24,17 +25,14 @@ class BaseManager(ManagerInterface):
         trigger = self.events.trigger
         trigger("start_experiment")
         trigger("init_environment")
-        trigger("generate_test_cases")
         test_cases = self.data.get("test_cases")
         assert isinstance(test_cases, TestCases)
 
         def test_case_workflow(test_case: TestCase):
-            print(test_case)
             self.data.set("current_test_case", test_case)
             trigger("start_single_test_case")
             trigger("start_data_collection")
-            trigger("update_environment")
-
+        log.info(f"Total testcases: {len(test_cases)}")
         test_cases.iter(test_case_workflow, manager)
         trigger("end_experiment")
 

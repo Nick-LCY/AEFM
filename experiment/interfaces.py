@@ -25,6 +25,7 @@ class _Events(object):
         if not hasattr(self, event):
             log.warn(f'Event: "{event}" doesn\'t have a handler.')
             return
+        log.key(f'Event: "{event}" has triggered.')
         return self.__getattribute__(event)()
 
     def register(
@@ -77,7 +78,8 @@ class ManagerInterface(ABC):
     rkflow of an experiment. It also have other three required attributes: ``events``,
     ``componenets`` and ``data``. They are used for globally manage data and met
     hods.
-    """    
+    """
+
     def __init__(self) -> None:
         self.events = _Events()
         self.components = _Components()
