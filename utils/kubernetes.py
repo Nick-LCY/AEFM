@@ -40,7 +40,11 @@ def deploy_by_yaml(
 
 def delete_by_name(name: str, namespace: str, wait: bool = False, timeout: int = 300):
     api_client = client.AppsV1Api()
-    api_client.delete_namespaced_deployment(name, namespace)
+    try:
+        api_client.delete_namespaced_deployment(name, namespace)
+    except client.ApiException as e:
+        if e.status != 404:
+            raise e
     if wait:
         wait_deletion(namespace, timeout)
 

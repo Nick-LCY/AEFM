@@ -43,7 +43,7 @@ class KubernetesYAMLs:
             self.yamls: list[dict] = yaml_list
         else:
             # todo: Exception management
-            raise BaseException("Folder/file not found")
+            raise BaseException(f"{path} not found")
 
     def update(
         self,

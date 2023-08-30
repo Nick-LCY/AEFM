@@ -171,7 +171,7 @@ class Logger(object):
                 begin = "\r{}\n{}".format(tick, begin)
             else:
                 begin = "\n{}".format(begin)
-        print(begin + text, end=end)
+        print(begin + text, end=end, flush=True)
         self._last_is_update = update
         self._last_use_spinner = update and spinner
         self._last_level = level
@@ -198,27 +198,27 @@ class Logger(object):
 
     def debug(self, text, update=False, spinner=True, once=None, to_file=False):
         if to_file:
-            return self.log_to_file(text, "debug")
+            self.log_to_file(text, "debug")
         return self.log(text, "debug", update, spinner, once)
 
     def info(self, text, update=False, spinner=True, once=None, to_file=False):
         if to_file:
-            return self.log_to_file(text, "info")
+            self.log_to_file(text, "info")
         return self.log(text, "info", update, spinner, once)
 
     def key(self, text, update=False, spinner=True, once=None, to_file=False):
         if to_file:
-            return self.log_to_file(text, "key")
+            self.log_to_file(text, "key")
         return self.log(text, "key", update, spinner, once)
 
     def warn(self, text, update=False, spinner=True, once=None, to_file=False):
         if to_file:
-            return self.log_to_file(text, "warn")
+            self.log_to_file(text, "warn")
         return self.log(text, "warn", update, spinner, once)
 
     def error(self, text, update=False, spinner=True, once=None, to_file=False):
         if to_file:
-            return self.log_to_file(text, "error")
+            self.log_to_file(text, "error")
         return self.log(text, "error", update, spinner, once)
 
     def error_exit(self, error_msg):
@@ -241,16 +241,16 @@ class Logger(object):
     def exit(self):
         # emit an empty line, as last log has no carriage return
         if self._last_is_update:
-            print()
+            print(flush=True)
 
     def set_log_file_path(self, path: str):
-        foler = os.path.split(path)
-        create_folder(foler)
+        folder, _ = os.path.split(path)
+        create_folder(folder)
         self.log_file_path = path
 
     def log_to_file(self, text: str, level: str):
-        date = datetime.now().strftime("[%Y%b%d|%X]")
-        content = f"{'<' + level + '>':8}{date} {text}"
+        date = datetime.now().strftime("<%Y%b%d|%X>")
+        content = f"{'<' + level + '>': >8} {date} {text}\n"
         write_to_file(self.log_file_path, content, append=True)
 
 

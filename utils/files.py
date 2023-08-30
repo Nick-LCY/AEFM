@@ -22,7 +22,10 @@ def delete_path(path: str) -> None:
         path (str): Folder/file path.
     """
     if os.path.exists(path):
-        shutil.rmtree(path)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        else:
+            os.remove(path)
 
 
 def write_to_file(path: str, content: str, append: bool = False) -> None:

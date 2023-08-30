@@ -96,7 +96,7 @@ class PromFetcher:
         deployments: list[str],
         start_time: float,
         end_time: float,
-        step: int,
+        step: int = 1,
     ) -> Response:
         """Fetch maximum memory usage in a range of time.
 

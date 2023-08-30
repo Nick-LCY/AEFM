@@ -62,8 +62,8 @@ def load_from_json(data) -> pd.DataFrame:
             "duration": "traceLatency",
         }
     )[["traceId", "traceTime", "traceLatency"]]
-    spans_with_parent.at[:, "parentId"] = spans_with_parent["references"].map(
-        lambda x: x[0]["spanID"]
+    spans_with_parent = spans_with_parent.assign(
+        parentId=spans_with_parent["references"].map(lambda x: x[0]["spanID"])
     )
     temp_parent_spans = spans_data[
         ["traceID", "spanID", "operationName", "duration", "processID"]
@@ -162,6 +162,7 @@ def load_from_json(data) -> pd.DataFrame:
             "childDuration": "child_duration",
         }
     )
+    return merged_df
 
 
 def exact_parent_duration(data: pd.DataFrame) -> pd.DataFrame:
@@ -269,7 +270,7 @@ def decouple_parent_and_child(data: pd.DataFrame, percentile=0.95) -> pd.DataFra
     """
     parent_perspective = (
         data.rename(columns={"exact_parent_duration": "latency"})
-        .groupby(["parent_ms", "parent_pod", "trace_id"])[["exact_parent_duration"]]
+        .groupby(["parent_ms", "parent_pod", "trace_id"])[["latency"]]
         .mean()
         .groupby(["parent_ms", "parent_pod"])
         .quantile(percentile)
@@ -278,12 +279,12 @@ def decouple_parent_and_child(data: pd.DataFrame, percentile=0.95) -> pd.DataFra
     )
     child_perspective = (
         data.rename(columns={"child_duration": "latency"})
-        .groupby(["child_ms", "child_pod", "trace_id"])[["child_duration"]]
+        .groupby(["child_ms", "child_pod", "trace_id"])[["latency"]]
         .mean()
         .groupby(["child_ms", "child_pod"])
         .quantile(percentile)
         .reset_index()
-        .rename(columns={"parent_ms": "microservice", "parent_pod": "pod"})
+        .rename(columns={"child_ms": "microservice", "child_pod": "pod"})
     )
     quantiled = pd.concat([parent_perspective, child_perspective]).drop_duplicates(
         subset=["microservice", "pod"], keep="first"
