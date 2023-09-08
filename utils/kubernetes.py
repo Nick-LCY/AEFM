@@ -78,6 +78,29 @@ def delete_by_yaml(
         wait_deletion(namespace, timeout)
 
 
+def _wait_core(namespace: str, timeout: int, wait_type: str, condition):
+    api = client.CoreV1Api()
+    used_time = 0
+    finished_flag = False
+    log.info(f"Waiting for {wait_type} finished...")
+    while used_time < timeout and not finished_flag:
+        sleep(5)
+        if used_time % 60 == 0 and used_time != 0:
+            log.info(f"{used_time} seconds passed")
+        api_resp = api.list_namespaced_pod(namespace, _preload_content=False)
+        resp_data = json.loads(api_resp.read().decode("utf-8"))["items"]
+        finished_flag, unfinished_pods = condition(resp_data)
+        if len(unfinished_pods) > 5:
+            log.info(f"{len(unfinished_pods)} pods unfinished", update=True)
+        elif len(unfinished_pods) != 0:
+            log.info(f"Unfinished Pods: {', '.join(unfinished_pods)}", update=True)
+        used_time += 5
+    if not finished_flag:
+        log.warn(f"{wait_type} waiting timeout!")
+    else:
+        log.info(f"{wait_type} finished! Used time: {used_time}s")
+
+
 def wait_deployment(namespace: str, timeout: int):
     """Waiting for deployment finished in ``namespace``.
 
@@ -85,39 +108,25 @@ def wait_deployment(namespace: str, timeout: int):
         namespace (str): Where to monitor pods.
         timeout (int): How long should the program wait.
     """
-    api = client.CoreV1Api()
-    used_time = 0
-    deployment_finished_flag = False
-    log.info("Waiting for deployment finished...")
-    while used_time < timeout and not deployment_finished_flag:
-        sleep(5)
-        if used_time % 60 == 0 and used_time != 0:
-            log.info(f"{used_time} seconds passed")
-        api_resp = api.list_namespaced_pod(namespace, _preload_content=False)
-        resp_data = json.loads(api_resp.read().decode("utf-8"))["items"]
-        deployment_finished_flag = True
+
+    def condition(resp_data):
         unfinished_pods = []
+        finished_flag = True
         for pod in resp_data:
             pod_finished_flag = True
             if pod["status"]["phase"] != "Running":
-                deployment_finished_flag = False
+                finished_flag = False
                 pod_finished_flag = False
             else:
                 for container in pod["status"]["containerStatuses"]:
                     if not container["ready"]:
-                        deployment_finished_flag = False
+                        finished_flag = False
                         pod_finished_flag = False
             if not pod_finished_flag:
                 unfinished_pods.append(pod["metadata"]["name"])
-        if len(unfinished_pods) > 5:
-            log.info(f"{len(unfinished_pods)} pods unfinished", update=True)
-        elif len(unfinished_pods) != 0:
-            log.info(f"Unfinished Pods: {', '.join(unfinished_pods)}", update=True)
-        used_time += 5
-    if not deployment_finished_flag:
-        log.warn("WARNING: Deployment waiting timeout!")
-    else:
-        log.info(f"Deployment finished! Used time: {used_time}s")
+        return finished_flag, unfinished_pods
+
+    _wait_core(namespace, timeout, "deployment", condition)
 
 
 def wait_deletion(namespace: str, timeout: int):
@@ -127,25 +136,47 @@ def wait_deletion(namespace: str, timeout: int):
         namespace (str): Where to monitor pods.
         timeout (int): How long should the program wait.
     """
-    api = client.CoreV1Api()
-    used_time = 0
-    deletion_finished_flag = False
-    sleep(5)
-    log.info("Waiting for deletion finished...")
-    while used_time < timeout and not deletion_finished_flag:
-        sleep(5)
-        if used_time % 60 == 0 and used_time != 0:
-            log.info(f"{used_time} seconds passed")
-        api_resp = api.list_namespaced_pod(namespace, _preload_content=False)
-        resp_data = json.loads(api_resp.read().decode("utf-8"))["items"]
-        status_list = [
+
+    def condition(resp_data):
+        unfinished_pods = [
             x["metadata"]["name"]
             for x in resp_data
             if "deletionTimestamp" in x["metadata"]
         ]
-        deletion_finished_flag = True if len(status_list) == 0 else False
-        used_time += 5
-    if not deletion_finished_flag:
-        log.warn("WARNING: Deletion waiting timeout!")
-    else:
-        log.info(f"Deletion finished! Used time: {used_time}s")
+        finished_flag = len(unfinished_pods) == 0
+        return finished_flag, unfinished_pods
+
+    _wait_core(namespace, timeout, "deletion", condition)
+
+
+def wait_all(namespace: str, timeout: int):
+    """Waiting for both deletion and deployment finished in ``namespace``.
+
+    Args:
+        namespace (str): Where to monitor pods.
+        timeout (int): How long should the program wait.
+    """
+
+    def condition(resp_data):
+        unfinished_pods = [
+            x["metadata"]["name"]
+            for x in resp_data
+            if "deletionTimestamp" in x["metadata"]
+        ]
+        finished_flag = len(unfinished_pods) == 0
+        for pod in resp_data:
+            pod_finished_flag = True
+            if pod["status"]["phase"] != "Running":
+                finished_flag = False
+                pod_finished_flag = False
+            else:
+                for container in pod["status"]["containerStatuses"]:
+                    if not container["ready"]:
+                        finished_flag = False
+                        pod_finished_flag = False
+            if not pod_finished_flag:
+                unfinished_pods.append(pod["metadata"]["name"])
+        unfinished_pods = list(set(unfinished_pods))
+        return finished_flag, unfinished_pods
+
+    _wait_core(namespace, timeout, "deployment and deletion", condition)
