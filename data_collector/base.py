@@ -62,9 +62,11 @@ class BaseDataCollector(DataCollectorInterface):
         """
         try:
             throughput_data = self.throughput_collector.collect(test_case_data.name)
-            throughput_data = pd.DataFrame([{"throughput": throughput_data}])
+            throughput_data = pd.DataFrame([{"real_throughput": throughput_data}])
         except:
-            log.error(f"{test_case_data.name} throughput collection failed!")
+            log.error(
+                f"{test_case_data.name} throughput collection failed!", to_file=True
+            )
             traceback.print_exc()
             return
 
@@ -76,7 +78,7 @@ class BaseDataCollector(DataCollectorInterface):
             )
             statistical_data, raw_data = self.trace_collector.process_trace(trace_data)
         except:
-            log.error(f"{test_case_data.name} trace collection failed!")
+            log.error(f"{test_case_data.name} trace collection failed!", to_file=True)
             traceback.print_exc()
             return
 
@@ -98,7 +100,10 @@ class BaseDataCollector(DataCollectorInterface):
             )
             hardware_data = cpu_data.merge(mem_data)
         except:
-            log.error(f"{test_case_data.name} hardware resource collection failed!")
+            log.error(
+                f"{test_case_data.name} hardware resource collection failed!",
+                to_file=True,
+            )
             traceback.print_exc()
             return
 
@@ -122,12 +127,13 @@ class BaseDataCollector(DataCollectorInterface):
             append_csv_to_file(f"{self.data_path}/throughput_data.csv", throughput_data)
 
         except:
-            log.error(f"{test_case_data.name} data save failed!")
+            log.error(f"{test_case_data.name} data save failed!", to_file=True)
             traceback.print_exc()
         log.info(f"Data collection of {test_case_data.name} success!")
 
     def wait(self) -> None:
         """Wait until all async data collection processes done."""
-        self.proc_pool.close()
-        self.proc_pool.join()
+        if self.proc_pool is not None:
+            self.proc_pool.close()
+            self.proc_pool.join()
         self.proc_pool = multiprocessing.Pool(self.max_processes)

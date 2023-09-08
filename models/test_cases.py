@@ -199,6 +199,7 @@ class TestCases:
         return test_cases
 
     def __len__(self) -> int:
+        self.generate()
         return len(self.generated_test_cases)
 
     def iter(self, workflow: Callable[[TestCase], None]):

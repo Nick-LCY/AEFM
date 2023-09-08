@@ -32,7 +32,7 @@ class BaseManager(ManagerInterface):
             self.data.set("current_test_case", test_case)
             trigger("start_single_test_case")
             trigger("start_data_collection")
-        log.info(f"Total testcases: {len(test_cases)}")
+        log.info(f"Total test cases: {len(test_cases)}")
         test_cases.iter(test_case_workflow)
         trigger("end_experiment")
 
