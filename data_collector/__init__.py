@@ -1,2 +1,2 @@
-from .models import *
-from .interfaces import *
+from .models import TestCaseData
+from .interfaces import DataCollectorInterface

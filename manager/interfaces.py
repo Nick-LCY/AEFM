@@ -15,7 +15,6 @@ class _Events(object):
         event: Literal[
             "start_experiment",
             "init_environment",
-            "generate_test_cases",
             "start_single_test_case",
             "start_data_collection",
             "update_environment",

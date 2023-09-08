@@ -4,9 +4,9 @@ from . import manager
 from time import time
 from deployer import DeployerInterface
 from deployer.base import BaseDeployer
-from workload_generator.wrk import (
+from workload_generator.base import (
     WrkConfig,
-    WrkWorkloadGenerator,
+    BaseWorkloadGenerator,
     WorkloadGeneratorInterface,
 )
 from data_collector import DataCollectorInterface
@@ -20,7 +20,7 @@ from inf_generator import InfGeneratorInterface
 from inf_generator.base import BaseInfGenerator
 from models import TestCase
 from utils.logger import log
-from data_collector.models import TestCaseData
+from data_collector import TestCaseData
 
 
 @register(event="start_experiment")
@@ -51,7 +51,7 @@ def start_experiment_handler():
     )
     manager.components.set(
         "workload_generator",
-        WrkWorkloadGenerator(wrk_config, configs_obj.file_paths["wrk_output_path"]),
+        BaseWorkloadGenerator(wrk_config, configs_obj.file_paths["wrk_output_path"]),
     )
     log.info(
         "Generating workload generator success, set to components.workload_generator"

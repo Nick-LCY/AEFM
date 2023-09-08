@@ -1,6 +1,5 @@
 from typing import Union, Callable
 from .test_case import TestCase
-from manager.interfaces import ManagerInterface
 
 
 def _load_range(data: Union[list[int], dict[str, int]]) -> list[int]:
@@ -103,7 +102,7 @@ class TestCases:
         test_cases.orders = data["orders"]
         test_cases.rounds = _load_range(data["rounds"])
         test_cases.workload = TestCases.Workload.load_from_dict(data["workload"])
-        inf_data = data["interferences"]
+        inf_data = data["interferences"] if data["interferences"] is not None else {}
         for inf_type in inf_data:
             test_cases.interferences[inf_type] = TestCases.Interference.load_from_dict(
                 inf_data[inf_type], inf_type
@@ -198,19 +197,20 @@ class TestCases:
             test_cases[-1].append_marker(order)
         self.generated_test_cases = test_cases
         return test_cases
-    
+
     def __len__(self) -> int:
         return len(self.generated_test_cases)
 
-    def iter(self, workflow: Callable[[TestCase], None], manager: ManagerInterface):
+    def iter(self, workflow: Callable[[TestCase], None]):
         """Iterate all test cases.
 
         Args:
             workflow (Callable[[TestCase], None]): A method that contains the wo
             rkflow of a single test case. Current test case will be passed into
             it as a parameter.
-            manager (ManagerInterface): Current experiment manager.
         """
+        from manager import manager
+
         self.generate()
         for idx, test_case in enumerate(self.generated_test_cases):
             workflow(test_case)

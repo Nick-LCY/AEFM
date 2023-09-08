@@ -50,7 +50,7 @@ test_cases:
   workload:
     configs:
       threads: 1
-      connection: 1
+      connections: 1
       throughput: 1
       script_path: example_script
       url: http://example.com

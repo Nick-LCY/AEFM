@@ -52,7 +52,7 @@ class WrkConfig:
         )
 
 
-class WrkWorkloadGenerator(WorkloadGeneratorInterface):
+class BaseWorkloadGenerator(WorkloadGeneratorInterface):
     """An encapsulation of wrk program, generates workload and provides real thr
     oughput information. To use this class, please make sure that you have alrea
     dy build a runnable wrk program. For more information, please check: https:/
