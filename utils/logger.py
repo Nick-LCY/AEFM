@@ -2,7 +2,6 @@ import atexit, itertools, time, sys, shutil, os, inspect
 from contextlib import contextmanager
 from termcolor import colored
 from utils.files import create_folder, write_to_file
-import os
 from datetime import datetime
 
 
@@ -175,26 +174,27 @@ class Logger(object):
         self._last_is_update = update
         self._last_use_spinner = update and spinner
         self._last_level = level
-        while num_level >= self._pause_level:
-            r = input(
-                "Continue [Return], Stack trace [t], " "Debugger [d], Abort [q]: "
-            )
-            if not r:
-                break
-            import inspect
+        # Disable pause function
+        # while num_level >= self._pause_level:
+        #     r = input(
+        #         "Continue [Return], Stack trace [t], " "Debugger [d], Abort [q]: "
+        #     )
+        #     if not r:
+        #         break
+        #     import inspect
 
-            frame = inspect.currentframe().f_back.f_back
-            if r == "d":
-                # FIXME setting trace to frame does not work
-                import ipdb
+        #     frame = inspect.currentframe().f_back.f_back
+        #     if r == "d":
+        #         # FIXME setting trace to frame does not work
+        #         import ipdb
 
-                ipdb.set_trace()
-            elif r == "t":
-                import traceback
+        #         ipdb.set_trace()
+        #     elif r == "t":
+        #         import traceback
 
-                traceback.print_stack(frame)
-            elif r == "q":
-                sys.exit(-1)
+        #         traceback.print_stack(frame)
+        #     elif r == "q":
+        #         sys.exit(-1)
 
     def debug(self, text, update=False, spinner=True, once=None, to_file=False):
         if to_file:
