@@ -67,7 +67,7 @@ class TestCase:
 
     def __init__(self) -> None:
         """A single test case of an experiment."""
-        self.workload: TestCase.Workload
+        self.workload: TestCase.Workload = None
         self.interferences = TestCase.Interference()
         self.round: int = None
         self.markers: list[str] = []
@@ -113,7 +113,7 @@ class TestCase:
         Args:
             inf_type (str): Type of interference.
             inf_configs (dict): Configs of interference.
-            inf_count (int): Amount (by N.O. of pods) of interference.
+            inf_count (int): Amount (by N.O. pods) of interference.
         """
         self.interferences.inf_types.append(inf_type)
         self.interferences.inf_configs.append(inf_configs)
@@ -126,7 +126,8 @@ class TestCase:
             TestCase: Copied object.
         """
         obj = TestCase()
-        obj.workload = self.workload.copy()
+        if self.workload is not None:
+            obj.workload = self.workload.copy()
         obj.interferences = self.interferences.copy()
         obj.round = self.round
         obj.markers = deepcopy(self.markers)

@@ -21,6 +21,8 @@ def _load_range(data: Union[list[int], dict[str, int]]) -> list[int]:
         # todo: Exception management
         assert "min" in data and "max" in data and "step" in data
         return [i for i in range(data["min"], data["max"] + 1, data["step"])]
+    if data is None:
+        return None
     # todo: Exception management
     raise ValueError("value of range field should be either dict of list")
 
@@ -126,7 +128,7 @@ class TestCases:
             them and regenerate test cases. Defaults to False.
         """
         if len(self.generated_test_cases) != 0 and not force:
-            return
+            return self.generated_test_cases
 
         def product(
             order: str,

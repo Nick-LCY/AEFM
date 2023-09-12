@@ -53,6 +53,9 @@ class _Components(object):
         self.__setattr__(name, component)
 
     def get(self, name: str):
+        if not hasattr(self, name):
+            log.debug(f"{name} is not stored in manager.data, None will be returned.")
+            return
         return self.__getattribute__(name)
 
 
@@ -67,7 +70,7 @@ class _Data(object):
 
     def get(self, name: str) -> Any:
         if not hasattr(self, name):
-            # todo: exception management
+            log.debug(f"{name} is not stored in manager.data, None will be returned.")
             return
         return self.__getattribute__(name)
 
