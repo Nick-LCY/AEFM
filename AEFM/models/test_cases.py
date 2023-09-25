@@ -212,7 +212,7 @@ class TestCases:
             rkflow of a single test case. Current test case will be passed into
             it as a parameter.
         """
-        from manager import manager
+        from ..manager import manager
 
         self.generate()
         for idx, test_case in enumerate(self.generated_test_cases):

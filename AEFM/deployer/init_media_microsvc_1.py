@@ -1,5 +1,8 @@
-import aiohttp, asyncio, json, argparse
+import aiohttp, asyncio, json, argparse, pathlib
 
+DATASET_FOLDER = (
+    pathlib.Path(__file__).parent.resolve().joinpath("datasets")
+)
 
 async def upload_cast_info(session, addr, cast):
     async with session.post(addr + "/wrk2-api/cast-info/write", json=cast) as resp:
@@ -90,8 +93,8 @@ async def write_movie_info(addr, raw_movies):
 
 
 def main(
-    cast_filename="datasets/tmdb/casts.json",
-    movie_filename="datasets/tmdb/movies.json",
+    cast_filename=f"{DATASET_FOLDER}/tmdb/casts.json",
+    movie_filename=f"{DATASET_FOLDER}/tmdb/movies.json",
     server_address="http://localhost:30445",
 ):
     with open(cast_filename, "r") as cast_file:

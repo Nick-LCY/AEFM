@@ -1,4 +1,8 @@
-import aiohttp, asyncio, os, string, random, argparse
+import aiohttp, asyncio, os, string, random, argparse, pathlib
+
+DATASET_FOLDER = (
+    pathlib.Path(__file__).parent.resolve().joinpath("datasets")
+)
 
 
 async def upload_follow(session, addr, user_0, user_1):
@@ -132,9 +136,9 @@ async def compose(addr, nodes, limit=200):
 
 
 def main(graph="socfb-Reed98", ip="127.0.0.1", port="8080", limit=200, compose=False):
-    with open(os.path.join("datasets/social-graph", graph, f"{graph}.nodes"), "r") as f:
+    with open(os.path.join(f"{DATASET_FOLDER}/social-graph", graph, f"{graph}.nodes"), "r") as f:
         nodes = getNumNodes(f)
-    with open(os.path.join("datasets/social-graph", graph, f"{graph}.edges"), "r") as f:
+    with open(os.path.join(f"{DATASET_FOLDER}/social-graph", graph, f"{graph}.edges"), "r") as f:
         edges = getEdges(f)
 
     random.seed(1)  # deterministic random numbers

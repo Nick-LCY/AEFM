@@ -4,6 +4,11 @@ from ..utils.kubernetes_YAMLs import KubernetesYAMLs
 from ..utils.kubernetes import delete_by_yaml, deploy_by_yaml
 from ..utils.files import delete_path, create_folder
 from .intrefaces import DeployerInterface
+import pathlib
+
+TEMPLATE_FOLDER = (
+    pathlib.Path(__file__).parent.parent.resolve().joinpath("yaml_repository")
+)
 
 
 class BaseDeployer(DeployerInterface):
@@ -40,7 +45,7 @@ class BaseDeployer(DeployerInterface):
         self.pod_spec: PodSpec = pod_spec
         self.testbed_nodes: list[Node] = testbed_nodes
         self.infra_nodes: list[Node] = infra_nodes
-        self.yaml_repo: str = yaml_repo
+        self.yaml_repo: str = yaml_repo.replace("$MODULE_DEFAULT", TEMPLATE_FOLDER.as_posix())
         self.tmp_under_test_path = f"tmp/under_test_{namespace}"
         self.tmp_infra_path = f"tmp/infra_{self.namespace}"
         self.app_img: Optional[str] = app_img

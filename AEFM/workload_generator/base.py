@@ -1,8 +1,12 @@
 from . import WorkloadGeneratorInterface
 from ..utils.logger import log
-import re, subprocess
+import re, subprocess, pathlib
 from typing import List
 from ..utils.files import delete_path, create_folder, write_to_file
+
+SCRIPTS_FOLDER = (
+    pathlib.Path(__file__).parent.resolve().joinpath("wrk_scripts")
+)
 
 
 class WrkConfig:
@@ -33,7 +37,7 @@ class WrkConfig:
         self.connections = connections
         self.duration = duration
         self.rate = rate
-        self.script = script
+        self.script = script.replace("$MODULE_DEFAULT", SCRIPTS_FOLDER.as_posix())
         self.url = url
 
     def get_cmd(self) -> str:
@@ -108,6 +112,4 @@ class BaseWorkloadGenerator(WorkloadGeneratorInterface):
             if match is not None:
                 cumulative_requests += int(match.group(1))
         throughput = cumulative_requests / self.wrk_config.duration
-        write_to_file(
-            f"{self.throughput_path}/{test_case_name}", f"{throughput}\n"
-        )
+        write_to_file(f"{self.throughput_path}/{test_case_name}", f"{throughput}\n")
