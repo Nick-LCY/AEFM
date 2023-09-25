@@ -1,8 +1,8 @@
 from . import WorkloadGeneratorInterface
-from utils.logger import log
+from ..utils.logger import log
 import re, subprocess
 from typing import List
-from utils.files import delete_path, create_folder, write_to_file
+from ..utils.files import delete_path, create_folder, write_to_file
 
 
 class WrkConfig:

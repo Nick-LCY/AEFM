@@ -1,7 +1,7 @@
-from utils.logger import log
+from ..utils.logger import log
 from .models import CpuUsage, MemUsage
 from .interfaces import HardwareCollectorInterface
-from utils.prom_fetcher import PromFetcher
+from ..utils.prom_fetcher import PromFetcher
 
 
 class PromHardwareCollector(HardwareCollectorInterface):

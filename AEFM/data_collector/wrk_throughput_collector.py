@@ -1,4 +1,4 @@
-from utils.logger import log
+from ..utils.logger import log
 from .interfaces import ThroughputCollectorInterface
 
 

@@ -1,6 +1,6 @@
-from models import TestCases, TestCase
+from ..models import TestCases, TestCase
 from .interfaces import ManagerInterface, _Events, _Components, _Data
-from utils.logger import log
+from ..utils.logger import log
 
 
 class BaseManager(ManagerInterface):

@@ -1,8 +1,8 @@
-from utils.jaeger_fetcher import JaegerFetcher
+from ..utils.jaeger_fetcher import JaegerFetcher
 import json
 import pandas as pd
-import utils.trace_processor as t_processor
-from utils.logger import log
+from ..utils import trace_processor as t_processor
+from ..utils.logger import log
 from .interfaces import TraceCollectorInterface
 
 

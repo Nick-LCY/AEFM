@@ -1,8 +1,8 @@
 import os, yaml, re
 from typing import Any, Optional
 from collections.abc import Callable
-from models import PodSpec, Node
-from utils.files import delete_path, create_folder
+from ..models import PodSpec, Node
+from .files import delete_path, create_folder
 
 _AFFINITY_TEMPLATE = """
 nodeAffinity:

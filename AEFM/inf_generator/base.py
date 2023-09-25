@@ -1,9 +1,9 @@
 from .interfaces import InfGeneratorInterface
 import os, pathlib, yaml
-from utils.kubernetes import deploy_by_yaml, wait_deletion, delete_by_name
-from utils.files import delete_path
-from models import Node
-from utils.kubernetes_YAMLs import KubernetesYAMLs
+from ..utils.kubernetes import deploy_by_yaml, wait_deletion, delete_by_name
+from ..utils.files import delete_path
+from ..models import Node
+from ..utils.kubernetes_YAMLs import KubernetesYAMLs
 from typing import Literal
 
 _AFFINITY_TEMPLATE = (

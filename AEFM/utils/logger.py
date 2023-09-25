@@ -1,7 +1,7 @@
 import atexit, itertools, time, sys, shutil, os, inspect
 from contextlib import contextmanager
 from termcolor import colored
-from utils.files import create_folder, write_to_file
+from .files import create_folder, write_to_file
 from datetime import datetime
 
 

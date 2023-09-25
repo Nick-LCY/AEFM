@@ -1,8 +1,8 @@
-from models import PodSpec, Node
+from ..models import PodSpec, Node
 from typing import Optional
-from utils.kubernetes_YAMLs import KubernetesYAMLs
-from utils.kubernetes import delete_by_yaml, deploy_by_yaml
-from utils.files import delete_path, create_folder
+from ..utils.kubernetes_YAMLs import KubernetesYAMLs
+from ..utils.kubernetes import delete_by_yaml, deploy_by_yaml
+from ..utils.files import delete_path, create_folder
 from .intrefaces import DeployerInterface
 
 

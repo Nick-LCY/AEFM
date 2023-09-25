@@ -1,6 +1,6 @@
 import os, yaml
-from models import Node, PodSpec, TestCases
-from utils.logger import log
+from ..models import Node, PodSpec, TestCases
+from ..utils.logger import log
 
 CONFIG_FILE_PATH = None
 

@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import Any, Literal
 from collections.abc import Callable
-from utils.logger import log
+from ..utils.logger import log
 
 
 class _Events(object):

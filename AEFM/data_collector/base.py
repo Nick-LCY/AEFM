@@ -3,8 +3,8 @@ from .prom_hardware_collector import PromHardwareCollector
 from .wrk_throughput_collector import WrkThroughputCollector
 from .models import TestCaseData
 from .interfaces import DataCollectorInterface
-from utils.logger import log
-from utils.files import append_csv_to_file, create_folder
+from ..utils.logger import log
+from ..utils.files import append_csv_to_file, create_folder
 import traceback, multiprocessing
 import pandas as pd
 

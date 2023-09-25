@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from models import Node
+from ..models import Node
 
 
 class InfGeneratorInterface(ABC):

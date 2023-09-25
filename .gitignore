@@ -3,3 +3,8 @@
 tmp/
 data/
 log/
+
+*.egg-info
+.eggs
+dist
+build
