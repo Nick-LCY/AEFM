@@ -137,3 +137,11 @@ class BaseDataCollector(DataCollectorInterface):
             self.proc_pool.close()
             self.proc_pool.join()
         self.proc_pool = multiprocessing.Pool(self.max_processes)
+
+    def __getstate__(self):
+        self_dict = self.__dict__.copy()
+        del self_dict["proc_pool"]
+        return self_dict
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
