@@ -56,7 +56,7 @@ class BaseInfGenerator(InfGeneratorInterface):
             case "cpu":
                 self.args = [f"{duration}s"]
             case "mem_capacity":
-                self.args = [f"{duration}s", "wired", "100000s"]
+                self.args = [f"{duration}s"]
             case "mem_bandwidth":
                 self.args = [f"{duration}s"]
             case "network":
