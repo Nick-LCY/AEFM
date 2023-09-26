@@ -37,7 +37,7 @@ def write_to_file(path: str, content: str, append: bool = False) -> None:
         append (bool): Append (True) or overwrite (False) file. Defaults to Fals
         e.
     """
-    with open(path, "a") as file:
+    with open(path, "a" if append else "w") as file:
         file.write(content)
 
 

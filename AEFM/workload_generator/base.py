@@ -101,6 +101,7 @@ class BaseWorkloadGenerator(WorkloadGeneratorInterface):
         # Read and analyze output data
         cumulative_requests = 0
         delete_path(f"{self.wrk_output_path}/{test_case_name}")
+        delete_path(f"{self.throughput_path}/{test_case_name}")
         for proc in processes:
             (out, _) = proc.communicate()
             content = out.decode("utf-8")

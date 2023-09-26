@@ -84,8 +84,9 @@ class BaseInfGenerator(InfGeneratorInterface):
 
     def _get_inf_names(self):
         if self.inf_type == "network":
-            cm_name = "-".join(self.deployed_nodes) + "-launch-script"
-            ds_name = "network-" + "-".join(self.deployed_nodes)
+            deplyed_node_names = [str(x) for x in self.deployed_nodes]
+            cm_name = "-".join(deplyed_node_names) + "-launch-script"
+            ds_name = "network-" + "-".join(deplyed_node_names)
             return [cm_name, ds_name]
         names = []
         for node in self.deployed_nodes:
@@ -98,6 +99,8 @@ class BaseInfGenerator(InfGeneratorInterface):
         Args:
             wait (bool, optional): Wait untile deletion finished? Defaults to False.
         """
+        if not hasattr(self, "deployed_nodes"):
+            return
         if self.inf_type == "network":
             cm_name, ds_name = self._get_inf_names()
             # todo: find a better way to delete
