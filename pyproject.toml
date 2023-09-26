@@ -10,6 +10,9 @@ name = "AEFM"
 version = "0.0.1"
 description = "An automatic experiment framework for microservice."
 authors = [{name = "Nick Lin", email = "nicklin9907@gmail.com"}]
+license = {file = "license"}
+readme = "README.md"
+requires-python = '>=3.11'
 dependencies = [
     "termcolor==2.3.0",
     "aiohttp==3.8.5",
