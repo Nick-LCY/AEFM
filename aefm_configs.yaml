@@ -2,61 +2,76 @@
 file_paths:
   # Output data of data collector
   collector_data: data
-  # Log files
-  log: log
+  # Log file
+  log: log/social.log
   # YAML repository that saves YAML files of different applications
-  yaml_repo: yaml_repository/hotel_reservation
+  # $MODULE_DEFAULT means using the module provided YAML repository
+  # In module provided YAML repository, there are 4 folders:
+  # social_network, hotel_reserv, train_ticket, media_microsvc
+  yaml_repo: $MODULE_DEFAULT/social_network
+  wrk_output_path: tmp/wrk
 
+# Application name, 4 optional names: social, hotel, media, train
+app: social
+# HTTP port of application, used for writing data
+port: 30628
+# Deployment replicas config for stateless microservices
+replicas:
+  user-timeline-service: 4
+  home-timeline-service: 4
+  post-storage-service: 4
 # Namespace used in this experiment
-namespace: hotel-reserv
+namespace: social-network
 # Docker image used to create containers
-app_img: nicklin9907/erms:hotelreservation-1.0
+app_img: nicklin9907/erms:socialnetwork-1.1
+# Duration of single test case
+duration: 40
 # Prometheus API address
 prometheus_host: http://localhost:30090
 # Jaeger API address
-jaeger_host: http://localhost:30068
+jaeger_host: http://localhost:30094
+# Jaeger entrance microservice
+jaeger_entrance: nginx-web-server
 # Available nodes, based on their roles, will assign different microservices on them.
 nodes:
   # Name of nodes
-- name: node01
+- name: 06-worker
   # List of roles, defaultly available: testbed and infra
   roles:
   - testbed
   - infra
   # IP address, optional
-  ip: "10.110.111.10"
-- name: node02
+- name: 07-worker
   roles:
   - testbed
-- name: node03
-  roles:
   - infra
 # Pod resource limiation, same as requests/limits part in Kubernetes
 pod_spec:
   cpu_size: 0.1
   mem_size: 200Mi
-# By default, config loader will generate test cases cover all possible combinations
-# of all following 
 test_cases:
+  # Config loader will generate test cases cover all possible
+  # combinations of all items in orders.
   orders:
   - workload
+  - rounds
   - mem_capacity
   - cpu
-  - sample_customize
   rounds:
     min: 1
-    max: 5
+    max: 2
     step: 1
   workload:
     configs:
       threads: 1
       connections: 1
-      throughput: 1
-      script_path: example_script
-      url: http://example.com
+      rate: 1
+      # Similar to yaml_repository, module provides some default scripts.
+      script: $MODULE_DEFAULT/social-network/read-home-timeline.lua
+      url: http://localhost:30628
     range:
       min: 1
-      max: 20
+      max: 2
       step: 1
 
   interferences:
@@ -65,8 +80,8 @@ test_cases:
         cpu_size: 0.01
         mem_size: 4Gi
       range:
-      - 7
-      - 10
+      - 1
+      - 2
     cpu:
       configs:
         cpu_size: 1
