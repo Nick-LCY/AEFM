@@ -1,6 +1,7 @@
 from ..models import TestCases, TestCase
 from .interfaces import ManagerInterface, _Events, _Components, _Data
 from ..utils.logger import log
+from ..utils.timer import timer
 
 
 class BaseManager(ManagerInterface):
@@ -28,6 +29,7 @@ class BaseManager(ManagerInterface):
         test_cases = self.data.get("test_cases")
         assert isinstance(test_cases, TestCases)
 
+        @timer(name="single test case", total_count=len(test_cases))
         def test_case_workflow(test_case: TestCase):
             self.data.set("current_test_case", test_case)
             trigger("start_single_test_case")
