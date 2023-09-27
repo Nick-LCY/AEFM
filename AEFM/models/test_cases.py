@@ -147,7 +147,7 @@ class TestCases:
                             obj.set_workload(wl)
                         case _:
                             if order in self.interferences:
-                                obj.append_inf(inf_count=i, **data)
+                                obj.set_inf(inf_count=i, **data)
                             else:
                                 obj.set_additional(order, i)
                 return test_cases
@@ -165,7 +165,7 @@ class TestCases:
                     case _:
                         if order in self.interferences:
                             [
-                                x.append_inf(inf_count=i, **data)
+                                x.set_inf(inf_count=i, **data)
                                 for x in updated_test_cases
                             ]
                         else:
@@ -190,7 +190,7 @@ class TestCases:
                             order,
                             test_cases,
                             inf.range,
-                            {"inf_type": inf.inf_type, "inf_configs": inf.configs},
+                            {"inf_type": inf.inf_type},
                         )
                     else:
                         test_cases = product(
@@ -217,7 +217,9 @@ class TestCases:
         self.generate()
         for idx, test_case in enumerate(self.generated_test_cases):
             workflow(test_case)
+            next_test_case = None
             if idx + 1 < len(self.generated_test_cases):
-                manager.data.set("next_test_case", self.generated_test_cases[idx + 1])
+                next_test_case = self.generated_test_cases[idx + 1]
+            manager.data.set("next_test_case", next_test_case)
             for marker in test_case.markers:
                 manager.events.trigger(f"end_{marker}")

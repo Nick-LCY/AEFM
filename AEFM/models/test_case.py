@@ -31,12 +31,11 @@ class TestCase:
 
         def __init__(self) -> None:
             """Configs and amount of interferences."""
-            self.inf_types: list[str] = []
-            self.inf_configs: list[dict] = []
-            self.inf_count: list[int] = []
+            self.inf_count: dict[str, int] = {}
 
         def __iter__(self) -> "TestCase.Interference":
             self.idx = 0
+            self.inf_types = list(self.inf_count.keys())
             return self
 
         def __next__(self) -> tuple[str, dict, int]:
@@ -44,14 +43,19 @@ class TestCase:
                 raise StopIteration
             result = (
                 self.inf_types[self.idx],
-                self.inf_configs[self.idx],
-                self.inf_count[self.idx],
+                self.inf_count[self.inf_types[self.idx]],
             )
             self.idx += 1
             return result
 
         def __len__(self) -> int:
-            return len(self.inf_types)
+            return len(self.inf_count)
+
+        def __getitem__(self, key):
+            return self.inf_count[key]
+        
+        def __setitem__(self, key, value):
+            self.inf_count[key] = value
 
         def copy(self) -> "TestCase.Interference":
             """Return a copy of this object.
@@ -60,9 +64,7 @@ class TestCase:
                 TestCase.Interference: Copied object.
             """
             obj = TestCase.Interference()
-            obj.inf_types = [x for x in self.inf_types]
-            obj.inf_configs = [x for x in self.inf_configs]
-            obj.inf_count = [x for x in self.inf_count]
+            obj.inf_count = deepcopy(self.inf_count)
             return obj
 
     def __init__(self) -> None:
@@ -107,17 +109,14 @@ class TestCase:
         """
         self.markers.append(marker)
 
-    def append_inf(self, inf_type: str, inf_configs: dict, inf_count: int) -> None:
-        """Append a new kind of interference.
+    def set_inf(self, inf_type: str, inf_count: int) -> None:
+        """Set a new kind of interference.
 
         Args:
             inf_type (str): Type of interference.
-            inf_configs (dict): Configs of interference.
             inf_count (int): Amount (by N.O. pods) of interference.
         """
-        self.interferences.inf_types.append(inf_type)
-        self.interferences.inf_configs.append(inf_configs)
-        self.interferences.inf_count.append(inf_count)
+        self.interferences[inf_type] = inf_count
 
     def copy(self) -> "TestCase":
         """Return a copy of this object.
@@ -141,19 +140,19 @@ class TestCase:
             if self.workload is not None
             else ""
         )
-        for inf_type, _, inf_count in self.interferences:
+        for inf_type, inf_count in self.interferences:
             content += f"{inf_type}={inf_count}|"
         for key in self.additional:
             content += f"{key}={self.additional[key]}|"
         return content[:-1]
-    
+
     def to_dict(self) -> dict[str, Any]:
         result = {}
         if self.round is not None:
             result["round"] = self.round
         if self.workload is not None:
             result["throughput"] = self.workload.throughput
-        for inf_type, _, inf_count in self.interferences:
+        for inf_type, inf_count in self.interferences:
             result[inf_type] = inf_count
         for key in self.additional:
             result[key] = self.additional[key]

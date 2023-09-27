@@ -94,7 +94,7 @@ def init_environment_handler():
     first = configs_obj.test_cases.generate()[0]
     log.info("Deploying interferences for first test case.")
     idx = 1
-    for inf_type, _, inf_count in first.interferences:
+    for inf_type, inf_count in first.interferences:
         inf_generator = manager.components.get("inf_generators")[inf_type]
         assert isinstance(inf_generator, InfGeneratorInterface)
         inf_generator.generate(
