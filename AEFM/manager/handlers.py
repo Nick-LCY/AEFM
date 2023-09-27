@@ -66,7 +66,10 @@ def start_experiment_handler():
     prom_fetcher = PromFetcher(configs_obj["prometheus_host"], configs_obj.namespace)
     prom_collector = PromHardwareCollector(prom_fetcher)
     data_collector = BaseDataCollector(
-        configs_obj.file_paths.collector_data, jaeger_collector, prom_collector, wrk_collector
+        configs_obj.file_paths.collector_data,
+        jaeger_collector,
+        prom_collector,
+        wrk_collector,
     )
     manager.components.set("data_collector", data_collector)
     log.info("Generating data collector success, set to components.data_collector")
@@ -155,3 +158,49 @@ def end_experiment_handler():
     assert isinstance(data_collector, DataCollectorInterface)
     log.info("Waiting for data collection processes finished.")
     data_collector.wait()
+
+
+@register(event="start_workload")
+def start_workload_handler():
+    pass
+
+
+@register(event="start_rounds")
+def start_rounds_handler():
+    pass
+
+
+@register(event="start_cpu")
+def start_cpu_handler():
+    generate_inf("cpu")
+
+
+@register(event="start_mem_capacity")
+def start_cpu_handler():
+    generate_inf("mem_capacity")
+
+
+@register(event="start_mem_bandwidth")
+def start_cpu_handler():
+    generate_inf("mem_bandwidth")
+
+
+@register(event="start_network")
+def start_cpu_handler():
+    generate_inf("network")
+
+
+def generate_inf(inf_type: str):
+    inf_generator = manager.components.get("inf_generators")[inf_type]
+    assert isinstance(inf_generator, InfGeneratorInterface)
+
+    current_test_case = manager.data.get("current_test_case")
+    assert isinstance(current_test_case, TestCase)
+
+    configs_obj = manager.data.get("configs")
+    assert isinstance(configs_obj, configs.Configs)
+
+    inf_count = current_test_case.interferences[inf_type]
+    inf_generator.generate(
+        inf_count, configs_obj.get_nodes_by_role("testbed"), wait=True
+    )

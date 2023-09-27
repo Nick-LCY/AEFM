@@ -38,7 +38,7 @@ class TestCase:
             self.inf_types = list(self.inf_count.keys())
             return self
 
-        def __next__(self) -> tuple[str, dict, int]:
+        def __next__(self) -> tuple[str, int]:
             if self.idx >= len(self.inf_types):
                 raise StopIteration
             result = (
