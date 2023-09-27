@@ -91,18 +91,18 @@ def start_experiment_handler():
 def init_environment_handler():
     configs_obj = manager.data.get("configs")
     assert isinstance(configs_obj, configs.Configs)
-    first = configs_obj.test_cases.generate()[0]
-    log.info("Deploying interferences for first test case.")
-    idx = 1
-    for inf_type, inf_count in first.interferences:
-        inf_generator = manager.components.get("inf_generators")[inf_type]
-        assert isinstance(inf_generator, InfGeneratorInterface)
-        inf_generator.generate(
-            inf_count,
-            configs_obj.get_nodes_by_role("testbed"),
-            wait=idx == len(first.interferences),
-        )
-        idx += 1
+    # first = configs_obj.test_cases.generate()[0]
+    # log.info("Deploying interferences for first test case.")
+    # idx = 1
+    # for inf_type, inf_count in first.interferences:
+    #     inf_generator = manager.components.get("inf_generators")[inf_type]
+    #     assert isinstance(inf_generator, InfGeneratorInterface)
+    #     inf_generator.generate(
+    #         inf_count,
+    #         configs_obj.get_nodes_by_role("testbed"),
+    #         wait=idx == len(first.interferences),
+    #     )
+    #     idx += 1
 
     deployer = manager.components.get("deployer")
     assert isinstance(deployer, DeployerInterface)

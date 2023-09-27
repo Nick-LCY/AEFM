@@ -196,7 +196,7 @@ class TestCases:
                         test_cases = product(
                             order, test_cases, self.__getattribute__(order)
                         )
-            test_cases[-1].append_marker(order)
+            test_cases[0].append_marker(order)
         self.generated_test_cases = test_cases
         return test_cases
 
@@ -215,11 +215,7 @@ class TestCases:
         from ..manager import manager
 
         self.generate()
-        for idx, test_case in enumerate(self.generated_test_cases):
-            workflow(test_case)
-            next_test_case = None
-            if idx + 1 < len(self.generated_test_cases):
-                next_test_case = self.generated_test_cases[idx + 1]
-            manager.data.set("next_test_case", next_test_case)
+        for test_case in self.generated_test_cases:
             for marker in test_case.markers:
-                manager.events.trigger(f"end_{marker}")
+                manager.events.trigger(f"start_{marker}")
+            workflow(test_case)

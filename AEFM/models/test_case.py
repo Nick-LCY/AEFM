@@ -101,8 +101,8 @@ class TestCase:
         self.round = round
 
     def append_marker(self, marker: str) -> None:
-        """Marker is used to mark an event. After a test case with markers has b
-        een used, events of its markers will be triggered.
+        """Marker is used to mark an event. Before a test case with markers star
+        ts, events of its markers will be triggered.
 
         Args:
             marker (str): Name of marker.
