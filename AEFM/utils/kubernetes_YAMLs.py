@@ -42,8 +42,7 @@ class KubernetesYAMLs:
                     yaml_list.extend([x for x in yaml_objs if x is not None])
             self.yamls: list[dict] = yaml_list
         else:
-            # todo: Exception management
-            raise BaseException(f"{path} not found")
+            raise FileNotFoundError(f"{path} not found")
 
     def update(
         self,

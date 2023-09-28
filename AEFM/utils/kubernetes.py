@@ -2,6 +2,7 @@ import os, json
 from time import sleep
 from kubernetes import utils, config, client
 from .logger import log
+import yaml
 
 config.load_kube_config()
 
@@ -38,7 +39,9 @@ def deploy_by_yaml(
         wait_deployment(namespace, timeout)
 
 
-def delete_by_name(name: str, namespace: str, wait: bool = False, timeout: int = 300):
+def delete_deployment(
+    name: str, namespace: str, wait: bool = False, timeout: int = 300
+):
     api_client = client.AppsV1Api()
     try:
         api_client.delete_namespaced_deployment(name, namespace)
@@ -70,8 +73,25 @@ def delete_by_yaml(
         BaseException: Raise when ``namespace`` is not specified but ``wait`` is
         set to True.
     """
-    # TODO: Need to find a better way to delete kubernetes components.
-    os.system(f"kubectl delete -Rf {folder} >/dev/null")
+    objs = []
+    for file_name in [x for x in os.listdir(folder) if ".yaml" in x or ".yml" in x]:
+        file = open(f"{folder}/{file_name}", "r", encoding="utf-8")
+        objs += yaml.load_all(file, Loader=yaml.CLoader)
+        file.close()
+    # todo: Temporarily use code from pull requests, replace this after kubernetes
+    # python api release a newer version contains this.
+    from .delete_from import delete_from_yaml, FailToDeleteError
+
+    api_client = client.ApiClient()
+    try:
+        delete_from_yaml(k8s_client=api_client, yaml_objects=objs)
+    except FailToDeleteError as e:
+        for api_exception in e.api_exceptions:
+            import ipdb
+
+            ipdb.set_trace()
+            if api_exception.status != 404:
+                raise api_exception
     if wait:
         if namespace is None:
             raise BaseException("No namespace spcified")
@@ -181,3 +201,29 @@ def wait_all(namespace: str, timeout: int):
         return finished_flag, unfinished_pods
 
     _wait_core(namespace, timeout, "deployment and deletion", condition)
+
+
+def delete_config_map(
+    name: str, namespace: str, wait: bool = False, timeout: int = 300
+):
+    api_client = client.CoreV1Api()
+    try:
+        api_client.delete_namespaced_config_map(name, namespace)
+    except client.ApiException as e:
+        if e.status != 404:
+            raise e
+    if wait:
+        wait_deletion(namespace, timeout)
+
+
+def delete_daemon_set(
+    name: str, namespace: str, wait: bool = False, timeout: int = 300
+):
+    api_client = client.AppsV1Api()
+    try:
+        api_client.delete_namespaced_daemon_set(name, namespace)
+    except client.ApiException as e:
+        if e.status != 404:
+            raise e
+    if wait:
+        wait_deletion(namespace, timeout)

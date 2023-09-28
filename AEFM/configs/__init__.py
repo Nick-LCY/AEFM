@@ -129,8 +129,6 @@ def load_configs() -> Configs:
         with open(config_file, "r") as file:
             configs_yaml = yaml.load(file, Loader=yaml.CLoader)
     except:
-        # todo: Exception management
-        print("Wrong file type of file path!")
-        return
+        raise BaseException("Wrong file type or file path!")
     log.info(f"Loading configs file from: {config_file}")
     return Configs.load_from_yaml(configs_yaml)

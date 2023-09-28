@@ -1,6 +1,11 @@
 from .interfaces import InfGeneratorInterface
 import os, pathlib, yaml
-from ..utils.kubernetes import deploy_by_yaml, wait_deletion, delete_by_name
+from ..utils.kubernetes import (
+    deploy_by_yaml,
+    delete_deployment,
+    delete_config_map,
+    delete_daemon_set,
+)
 from ..utils.files import delete_path
 from ..models import Node
 from ..utils.kubernetes_YAMLs import KubernetesYAMLs
@@ -103,13 +108,10 @@ class BaseInfGenerator(InfGeneratorInterface):
             return
         if self.inf_type == "network":
             cm_name, ds_name = self._get_inf_names()
-            # todo: find a better way to delete
-            os.system(f"kubectl delete cm -n {self.namespace} {cm_name}")
-            os.system(f"kubectl delete ds -n {self.namespace} {ds_name}")
-            if wait:
-                wait_deletion(self.namespace, 300)
+            delete_daemon_set(ds_name, self.namespace, wait=False)
+            delete_config_map(cm_name, self.namespace, wait, 300)
         for name in self._get_inf_names():
-            delete_by_name(name, self.namespace, wait)
+            delete_deployment(name, self.namespace, wait)
 
     def _generate_network_inf(self, nodes: list[Node], count: int):
         nodes_str = [str(x) for x in nodes]
