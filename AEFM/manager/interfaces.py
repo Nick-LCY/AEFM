@@ -24,7 +24,7 @@ class _Events(object):
         if not hasattr(self, event):
             log.warn(f'Event: "{event}" doesn\'t have a handler.')
             return
-        log.key(f'Event: "{event}" has triggered.')
+        log.debug(f'Event: "{event}" has triggered.')
         return self.__getattribute__(event)()
 
     def register(

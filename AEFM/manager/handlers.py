@@ -94,29 +94,17 @@ def start_experiment_handler():
 def init_environment_handler():
     configs_obj = manager.data.get("configs")
     assert isinstance(configs_obj, configs.Configs)
-    # first = configs_obj.test_cases.generate()[0]
-    # log.info("Deploying interferences for first test case.")
-    # idx = 1
-    # for inf_type, inf_count in first.interferences:
-    #     inf_generator = manager.components.get("inf_generators")[inf_type]
-    #     assert isinstance(inf_generator, InfGeneratorInterface)
-    #     inf_generator.generate(
-    #         inf_count,
-    #         configs_obj.get_nodes_by_role("testbed"),
-    #         wait=idx == len(first.interferences),
-    #     )
-    #     idx += 1
 
     deployer = manager.components.get("deployer")
     assert isinstance(deployer, DeployerInterface)
-    do_restart = log.countdown(
-        "Restart application and delete all stateful microservice", 10, "warn"
+    do_not_restart = log.countdown(
+        "Skipping process: Restart application and delete all stateful microservice", 10, "warn"
     )
-    if do_restart:
+    if not do_not_restart:
         log.info("Restaring application.")
         deployer.restart(configs_obj["app"], configs_obj["port"])
     else:
-        log.info("Application restart canceled.")
+        log.info("Application restart skipped.")
     log.info("Reloading application.")
     deployer.reload(configs_obj["replicas"])
 
@@ -125,7 +113,7 @@ def init_environment_handler():
 def start_single_test_case_handler():
     test_case = manager.data.get("current_test_case")
     assert isinstance(test_case, TestCase)
-    log.info(f"Current test case: {test_case}")
+    log.key(f"Current test case: {test_case}")
     workload_generator = manager.components.get("workload_generator")
     assert isinstance(workload_generator, WorkloadGeneratorInterface)
     start_time = time()

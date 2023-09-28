@@ -96,7 +96,8 @@ def _wait_core(namespace: str, timeout: int, wait_type: str, condition):
             log.info(f"Unfinished Pods: {', '.join(unfinished_pods)}", update=True)
         used_time += 5
     if not finished_flag:
-        log.warn(f"{wait_type} waiting timeout!")
+        log.warn(f"{wait_type} waiting timeout!", to_file=True)
+        log.debug(f"Unfinished Pods: {', '.join(unfinished_pods)}", to_file=True)
     else:
         log.info(f"{wait_type} finished! Used time: {used_time}s")
 

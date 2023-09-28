@@ -4,7 +4,7 @@ from .logger import log
 timer_dict = {}
 
 
-def timer(name: str, total_count: int = 0):
+def timer(name: str, total_count: int = 0, level: str = "info"):
     def inner(func):
         def wrapper(*args, **kwargs):
             if name not in timer_dict:
@@ -15,7 +15,7 @@ def timer(name: str, total_count: int = 0):
                 }
                 if total_count != 0:
                     timer_dict[name]["total_count"] = total_count
-                log.info(f"Create timer for \"{name}\".")
+                log.debug(f"Create timer for \"{name}\".")
                 return func(*args, **kwargs)
 
             named_timer = timer_dict[name]
@@ -29,7 +29,7 @@ def timer(name: str, total_count: int = 0):
             if "total_count" in named_timer:
                 est = (named_timer["total_count"] - named_timer["count"]) * average
                 info += f"Estimated left: {parser(est)}; "
-            log.info(info[:-2])
+            log.log(info[:-2], level=level)
             return func(*args, **kwargs)
 
         return wrapper

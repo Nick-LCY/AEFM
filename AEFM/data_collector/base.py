@@ -129,7 +129,7 @@ class BaseDataCollector(DataCollectorInterface):
         except:
             log.error(f"{test_case_data.name} data save failed!", to_file=True)
             traceback.print_exc()
-        log.info(f"Data collection of {test_case_data.name} success!")
+        log.key(f"Data collection of {test_case_data.name} success!")
 
     def wait(self) -> None:
         """Wait until all async data collection processes done."""

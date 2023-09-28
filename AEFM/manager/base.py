@@ -29,7 +29,7 @@ class BaseManager(ManagerInterface):
         test_cases = self.data.get("test_cases")
         assert isinstance(test_cases, TestCases)
 
-        @timer(name="single test case", total_count=len(test_cases))
+        @timer(name="single test case", total_count=len(test_cases), level="key")
         def test_case_workflow():
             trigger("start_single_test_case")
             trigger("start_data_collection")

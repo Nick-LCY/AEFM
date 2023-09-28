@@ -161,7 +161,7 @@ class Logger(object):
             text += " " * width
             text = text[:width]
         else:
-            begin = ""
+            begin = datetime.now().strftime("<%Y%b%d|%X> ")
             end = "\n"
         text = self._header(text, level, update and spinner)
         if not update and self._last_is_update:
