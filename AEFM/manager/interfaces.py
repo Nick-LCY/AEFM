@@ -24,8 +24,11 @@ class _Events(object):
         if not hasattr(self, event):
             log.warn(f'Event: "{event}" doesn\'t have a handler.')
             return
-        log.debug(f'Event: "{event}" has triggered.')
-        return self.__getattribute__(event)()
+        handler_names = [x.__qualname__ for x in self.__getattribute__(event)]
+        log.debug(f'Event: "{event}" has triggered, handlers: {handler_names}')
+        for handler in self.__getattribute__(event):
+            log.debug(f"{handler.__qualname__} involved.")
+            handler()
 
     def register(
         self,
@@ -39,8 +42,23 @@ class _Events(object):
             "end_experiment",
         ],
         handler: Callable,
+        method: Literal["insert", "replace", "append"] = "replace",
     ) -> None:
-        self.__setattr__(event, handler)
+        if method == "replace" or not hasattr(self, event):
+            self.__setattr__(event, [handler])
+            return
+
+        handlers = self.__getattribute__(event)
+        assert isinstance(handlers, list)
+        if method == "append":
+            handlers.append(handler)
+            return
+
+        if method == "insert":
+            handlers.insert(0, handler)
+            return
+
+        raise ValueError('method should be either "replace", "insert" or "append".')
 
 
 class _Components(object):

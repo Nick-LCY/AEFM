@@ -87,7 +87,7 @@ def start_experiment_handler():
     manager.data.set("test_cases", configs_obj.test_cases)
     # Set log file location
     log.set_log_file_path(configs_obj.file_paths.log)
-    log.info(f"Log file will be saved in {configs_obj.file_paths.log}.")
+    log.key(f"Log file will be saved in {configs_obj.file_paths.log}.")
 
 
 @register(event="init_environment")
