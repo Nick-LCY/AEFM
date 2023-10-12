@@ -6,9 +6,9 @@ AEFM treat every experiment as a lifecycle, through the lifecycle, it will trigg
 The basic events of a lifecycle are as follows:
 * Start Experiment
 * Init Environment
+* \[Customized Events to Handle Test Case Starts \]
 * Start Single Test Case
 * Start Data Collection
-* \[Customized Events to Handle Test Case Ends\]
 * End Experiment
 
 ## Components
@@ -27,4 +27,4 @@ Workload generator is used to provide pressure to applications. By default, we u
 Data collector will collect data from different data sources, and save them as files. By default, we use Jaeger to collect traces data, Prometheus to collect hardware data and rely on output of wrk to collect throughput data. You can use other data sources by writing your own collectors, as they follow the collector interface, they can be set as component and let manager to involve it.
 
 ### Interference Generator
-Interference generator generates CPU, memory capacity/bandwidth and network bandwidth interferences by default. User can also customized their own interference generator to generates other types of intererence.
+Interference generator generates CPU, memory capacity/bandwidth and network bandwidth interferences by default. User can also customized their own interference generator to generates other types of intererence. For CPU and memory capacity/bandwidth interference, we use a [modified version](https://github.com/Nick-LCY/iBench) of [iBench](https://github.com/stanford-mast/iBench). For network bandwidth interference, we use [IPerf3](https://hub.docker.com/r/networkstatic/iperf3) to generate.
