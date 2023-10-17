@@ -1,26 +1,25 @@
-from .. import configs
-from .events import register
-from . import manager
+from AEFM.manager import register, manager
+from AEFM import configs
 from time import time
-from ..deployer import DeployerInterface
-from ..deployer.base import BaseDeployer
-from ..workload_generator.base import (
+from AEFM.deployer import DeployerInterface
+from AEFM.deployer.base import BaseDeployer
+from AEFM.workload_generator.base import (
     WrkConfig,
     BaseWorkloadGenerator,
     WorkloadGeneratorInterface,
 )
-from ..data_collector import DataCollectorInterface
-from ..data_collector.base import BaseDataCollector
-from ..utils.jaeger_fetcher import JaegerFetcher
-from ..data_collector.jaeger_trace_collector import JaegerTraceCollector
-from ..data_collector.wrk_throughput_collector import WrkThroughputCollector, WrkFetcher
-from ..utils.prom_fetcher import PromFetcher
-from ..data_collector.prom_hardware_collector import PromHardwareCollector
-from ..inf_generator import InfGeneratorInterface
-from ..inf_generator.base import BaseInfGenerator
-from ..models import TestCase
-from ..utils.logger import log
-from ..data_collector import TestCaseData
+from AEFM.data_collector import DataCollectorInterface
+from AEFM.data_collector.base import BaseDataCollector
+from AEFM.utils.jaeger_fetcher import JaegerFetcher
+from AEFM.data_collector.jaeger_trace_collector import JaegerTraceCollector
+from AEFM.data_collector.wrk_throughput_collector import WrkThroughputCollector, WrkFetcher
+from AEFM.utils.prom_fetcher import PromFetcher
+from AEFM.data_collector.prom_hardware_collector import PromHardwareCollector
+from AEFM.inf_generator import InfGeneratorInterface
+from AEFM.inf_generator.base import BaseInfGenerator
+from AEFM.models import TestCase
+from AEFM.utils.logger import log
+from AEFM.data_collector import TestCaseData
 
 
 @register(event="start_experiment")

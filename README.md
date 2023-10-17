@@ -11,6 +11,23 @@ The basic events of a lifecycle are as follows:
 * Start Data Collection
 * End Experiment
 
+## Out-of-box usage
+AEFM provides out-of-box commands, you only need a little of configuration.
+
+### Prerequisite
+* Kubernetes cluster: At least 4 nodes (1 master + 3 slave), each of slave nodes has at least 8 CPU Cores + 32 GB RAM, slave nodes should be homogeneous.
+* Prometheus: We recommand installing prometheus from helm with the following command:
+  ```bash
+  helm install monitor prometheus-community/kube-prometheus-stack --version 39.11.0 -n monitor
+  ```
+  The corresponding service of prometheus should be set as `NodePort`, the AEFM uses it to fetch hardware data.
+* wrk2: Check [here](https://github.com/giltene/wrk2)
+* Some other dependencies (required by [DeathStarBench](https://github.com/delimitrou/DeathStarBench/blob/master/socialNetwork/README.md)):
+  ```bash
+  apt-get install -y libssl-dev libz-dev luarocks
+  luarocks install luasocket
+  ```
+
 ## Components
 AEFM relies on different components to perform efficiently and correctly.
 
