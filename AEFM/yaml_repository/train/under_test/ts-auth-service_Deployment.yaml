@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ts-auth-service
+  template:
+    metadata:
+      labels:
+        app: ts-auth-service
+    spec:
+      containers:
+      - command:
+        - java
+        - -Xmx1536M
+        - -jar
+        - /app/ts-auth-service-1.0.jar
+        image: nicklin9907/erms:tsauthservice-1.0
+        imagePullPolicy: Always
+        name: ts-auth-service
+        ports:
+        - containerPort: 12340
+        readinessProbe:
+          initialDelaySeconds: 160
+          periodSeconds: 10
+          tcpSocket:
+            port: 12340
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 160Mi

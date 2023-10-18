@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-payment-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ts-payment-service
+  template:
+    metadata:
+      labels:
+        app: ts-payment-service
+    spec:
+      containers:
+      - command:
+        - java
+        - -Xmx1536M
+        - -jar
+        - /app/ts-payment-service-1.0.jar
+        image: APP_IMG
+        imagePullPolicy: Always
+        name: ts-payment-service
+        ports:
+        - containerPort: 19001
+        readinessProbe:
+          initialDelaySeconds: 160
+          periodSeconds: 10
+          tcpSocket:
+            port: 19001
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 160Mi

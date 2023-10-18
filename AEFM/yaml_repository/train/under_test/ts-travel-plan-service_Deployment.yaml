@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-travel-plan-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ts-travel-plan-service
+  template:
+    metadata:
+      labels:
+        app: ts-travel-plan-service
+    spec:
+      containers:
+      - command:
+        - java
+        - -Xmx1536M
+        - -jar
+        - /app/ts-travel-plan-service-1.0.jar
+        image: APP_IMG
+        imagePullPolicy: Always
+        name: ts-travel-plan-service
+        ports:
+        - containerPort: 14322
+        readinessProbe:
+          initialDelaySeconds: 160
+          periodSeconds: 10
+          tcpSocket:
+            port: 14322
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 160Mi

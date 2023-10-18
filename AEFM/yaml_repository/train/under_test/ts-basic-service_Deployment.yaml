@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-basic-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ts-basic-service
+  template:
+    metadata:
+      labels:
+        app: ts-basic-service
+    spec:
+      containers:
+      - command:
+        - java
+        - -Xmx1536M
+        - -jar
+        - /app/ts-basic-service-1.0.jar
+        image: APP_IMG
+        imagePullPolicy: Always
+        name: ts-basic-service
+        ports:
+        - containerPort: 15680
+        readinessProbe:
+          initialDelaySeconds: 160
+          periodSeconds: 10
+          tcpSocket:
+            port: 15680
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 160Mi

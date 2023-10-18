@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-config-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ts-config-service
+  template:
+    metadata:
+      labels:
+        app: ts-config-service
+    spec:
+      containers:
+      - command:
+        - java
+        - -Xmx1536M
+        - -jar
+        - /app/ts-config-service-1.0.jar
+        image: APP_IMG
+        imagePullPolicy: Always
+        name: ts-config-service
+        ports:
+        - containerPort: 15679
+        readinessProbe:
+          initialDelaySeconds: 160
+          periodSeconds: 10
+          tcpSocket:
+            port: 15679
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 160Mi

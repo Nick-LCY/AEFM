@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-admin-order-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ts-admin-order-service
+  template:
+    metadata:
+      labels:
+        app: ts-admin-order-service
+    spec:
+      containers:
+      - command:
+        - java
+        - -Xmx1536M
+        - -jar
+        - /app/ts-admin-order-service-1.0.jar
+        image: APP_IMG
+        imagePullPolicy: Always
+        name: ts-admin-order-service
+        ports:
+        - containerPort: 16112
+        readinessProbe:
+          initialDelaySeconds: 160
+          periodSeconds: 10
+          tcpSocket:
+            port: 16112
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 160Mi

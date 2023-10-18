@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-inside-payment-service
+spec:
+  ports:
+  - name: http
+    port: 18673
+  selector:
+    app: ts-inside-payment-service

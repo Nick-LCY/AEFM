@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-ticket-office-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ts-ticket-office-service
+  template:
+    metadata:
+      labels:
+        app: ts-ticket-office-service
+    spec:
+      containers:
+      - image: codewisdom/ts-ticket-office-service-with-jaeger:v1
+        imagePullPolicy: Always
+        name: ts-ticket-office-service
+        ports:
+        - containerPort: 16108
+        readinessProbe:
+          initialDelaySeconds: 160
+          periodSeconds: 10
+          tcpSocket:
+            port: 16108
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 160Mi

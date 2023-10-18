@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-payment-service
+spec:
+  ports:
+  - name: http
+    port: 19001
+  selector:
+    app: ts-payment-service

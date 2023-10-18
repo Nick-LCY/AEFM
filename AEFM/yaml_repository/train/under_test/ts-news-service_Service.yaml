@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-news-service
+spec:
+  ports:
+  - name: http
+    port: 12862
+  selector:
+    app: ts-news-service

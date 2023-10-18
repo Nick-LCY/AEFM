@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-voucher-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ts-voucher-service
+  template:
+    metadata:
+      labels:
+        app: ts-voucher-service
+    spec:
+      containers:
+      - image: codewisdom/ts-voucher-service-with-jaeger:v1
+        imagePullPolicy: Always
+        name: ts-voucher-service
+        ports:
+        - containerPort: 16101
+        readinessProbe:
+          initialDelaySeconds: 160
+          periodSeconds: 10
+          tcpSocket:
+            port: 16101
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 160Mi

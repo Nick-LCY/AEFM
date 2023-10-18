@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-notification-service
+spec:
+  ports:
+  - name: http
+    port: 17853
+  selector:
+    app: ts-notification-service

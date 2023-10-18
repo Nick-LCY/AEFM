@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-consign-service
+spec:
+  ports:
+  - name: http
+    port: 16111
+  selector:
+    app: ts-consign-service

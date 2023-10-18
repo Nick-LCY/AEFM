@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-admin-user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ts-admin-user-service
+  template:
+    metadata:
+      labels:
+        app: ts-admin-user-service
+    spec:
+      containers:
+      - command:
+        - java
+        - -Xmx1536M
+        - -jar
+        - /app/ts-admin-user-service-1.0.jar
+        image: APP_IMG
+        imagePullPolicy: Always
+        name: ts-admin-user-service
+        ports:
+        - containerPort: 16115
+        readinessProbe:
+          initialDelaySeconds: 160
+          periodSeconds: 10
+          tcpSocket:
+            port: 16115
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 160Mi

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-contacts-service
+spec:
+  ports:
+  - name: http
+    port: 12347
+  selector:
+    app: ts-contacts-service

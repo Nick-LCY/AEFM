@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-ticketinfo-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ts-ticketinfo-service
+  template:
+    metadata:
+      labels:
+        app: ts-ticketinfo-service
+    spec:
+      containers:
+      - command:
+        - java
+        - -Xmx1536M
+        - -jar
+        - /app/ts-ticketinfo-service-1.0.jar
+        image: APP_IMG
+        imagePullPolicy: Always
+        name: ts-ticketinfo-service
+        ports:
+        - containerPort: 15681
+        readinessProbe:
+          initialDelaySeconds: 160
+          periodSeconds: 10
+          tcpSocket:
+            port: 15681
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 160Mi

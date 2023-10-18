@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-ui-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ts-ui-dashboard
+  template:
+    metadata:
+      labels:
+        app: ts-ui-dashboard
+    spec:
+      containers:
+      - image: codewisdom/ts-ui-dashboard-with-jaeger:v1
+        imagePullPolicy: Always
+        name: ts-ui-dashboard
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi

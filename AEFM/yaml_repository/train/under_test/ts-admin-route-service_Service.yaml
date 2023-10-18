@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-admin-route-service
+spec:
+  ports:
+  - name: http
+    port: 16113
+  selector:
+    app: ts-admin-route-service

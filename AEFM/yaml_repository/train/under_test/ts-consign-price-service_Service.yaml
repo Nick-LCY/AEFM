@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-consign-price-service
+spec:
+  ports:
+  - name: http
+    port: 16110
+  selector:
+    app: ts-consign-price-service

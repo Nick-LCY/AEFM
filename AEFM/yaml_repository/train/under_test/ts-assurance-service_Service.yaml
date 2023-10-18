@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-assurance-service
+spec:
+  ports:
+  - name: http
+    port: 18888
+  selector:
+    app: ts-assurance-service

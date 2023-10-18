@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-order-other-service
+spec:
+  ports:
+  - name: http
+    port: 12032
+  selector:
+    app: ts-order-other-service

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-voucher-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ts-voucher-mysql
+  template:
+    metadata:
+      labels:
+        app: ts-voucher-mysql
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        image: mysql:5.6.35
+        imagePullPolicy: IfNotPresent
+        name: ts-voucher-mysql
+        ports:
+        - containerPort: 3306
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
