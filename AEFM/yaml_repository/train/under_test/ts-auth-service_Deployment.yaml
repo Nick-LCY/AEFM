@@ -18,7 +18,7 @@ spec:
         - -Xmx1536M
         - -jar
         - /app/ts-auth-service-1.0.jar
-        image: nicklin9907/erms:tsauthservice-1.0
+        image: nicklin9907/aefm:tsauthservice-1.0
         imagePullPolicy: Always
         name: ts-auth-service
         ports:

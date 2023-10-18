@@ -8,7 +8,7 @@ file_paths:
   # $MODULE_DEFAULT means using the module provided YAML repository
   # In module provided YAML repository, there are 4 folders:
   # social_network, hotel_reserv, train_ticket, media_microsvc
-  yaml_repo: $MODULE_DEFAULT/social_network
+  yaml_repo: $MODULE_DEFAULT/social
   wrk_output_path: tmp/wrk
 
 # Application name, 4 optional names: social, hotel, media, train
@@ -23,7 +23,7 @@ replicas:
 # Namespace used in this experiment
 namespace: social-network
 # Docker image used to create containers
-app_img: nicklin9907/erms:socialnetwork-1.1
+app_img: nicklin9907/aefm:social-1.1
 # Duration of single test case
 duration: 40
 # Prometheus API address
@@ -67,7 +67,7 @@ test_cases:
       connections: 1
       rate: 1
       # Similar to yaml_repository, module provides some default scripts.
-      script: $MODULE_DEFAULT/social-network/read-home-timeline.lua
+      script: $MODULE_DEFAULT/social/read-home-timeline.lua
       url: http://localhost:30628
     range:
       min: 1

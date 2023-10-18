@@ -14,7 +14,7 @@ replicas:
   profile: 2
   geo: 2
 namespace: hotel-reserv
-app_img: nicklin9907/erms:hotelreservation-1.0
+app_img: nicklin9907/aefm:hotel-1.0
 duration: 40
 jaeger_host: http://localhost:30095
 jaeger_entrance: frontend
@@ -68,7 +68,7 @@ replicas:
   home-timeline-service: 4
   post-storage-service: 4
 namespace: social-network
-app_img: nicklin9907/erms:socialnetwork-1.1
+app_img: nicklin9907/aefm:social-1.1
 duration: 40
 jaeger_host: http://localhost:30094
 jaeger_entrance: nginx-web-server
