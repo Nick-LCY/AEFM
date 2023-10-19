@@ -1,17 +1,23 @@
 import os, shutil, click, yaml
 from .messages import *
 from .utils import update
+from ..utils.files import create_folder
 
 
 @click.command()
 @click.option("-d", "--dir", default=".")
 def init(dir):
-    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
     TEMPLATE_DIR = os.path.join(ROOT_DIR, "templates")
     if dir != ".":
-        shutil.copytree(TEMPLATE_DIR, dir)
+        if os.path.exists(dir):
+            print("The directory already exists.")
+            exit(1)
+        create_folder(dir)
     else:
-        shutil.copytree(TEMPLATE_DIR, os.getcwd())
+        dir = os.getcwd()
+    for file in os.listdir(TEMPLATE_DIR):
+        shutil.copyfile(os.path.join(TEMPLATE_DIR, file), os.path.join(dir, file))
 
 
 @click.command()
@@ -57,7 +63,8 @@ def auto_config():
             node_obj["roles"].append("infra")
         if node["name"] in testbed_nodes:
             node_obj["roles"].append("testbed")
-        nodes_in_config.append(node_obj)
+        if len(node_obj["roles"]) != 0:
+            nodes_in_config.append(node_obj)
 
     prom_host = click.prompt(PROMETHEUS_HOST_MSG, default="http://localhost:9090")
 
@@ -84,3 +91,5 @@ def auto_config():
     yaml.Dumper.ignore_aliases = lambda *_: True
     with open(f"{app}_config.yaml", "w") as file:
         yaml.dump(config_yaml, file, default_flow_style=False)
+
+    click.echo(f"Config file is saved at {app}_config.yaml.")

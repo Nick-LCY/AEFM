@@ -28,6 +28,41 @@ AEFM provides out-of-box commands, you only need a little of configuration.
   luarocks install luasocket
   ```
 
+### Init app
+By running the following command, AEFM will create init files in current directory.
+```bash
+python -m AEFM init
+```
+
+You can also init into another directory with following command:
+```bash
+python -m AEFM init -d my_first_app
+```
+
+After initialization, the target directory will contain following files:
+```
+target_dir
+├─handlers.py
+├─main.py
+└─sample_configs.yaml
+```
+* `handlers.py` provides default handlers, you may edit them to match your requirement.
+* `main.py` is the entrance file of experiment, to run the experiment, use:
+  ```bash
+  python main.py
+  ```
+  By editing the `configs.CONFIG_FILE_PATH`, you can use different config file.
+* `sample_configs.yaml` is an sample config file. Please read comments inside to understand usage of each value.
+
+### Auto configuration
+
+AEFM provides a command that can help you quickly generate configuration file, try the following command:
+```bash
+python -m AEFM auto-config
+```
+
+The program will check specification of your cluster and help you to set config file.
+
 ## Components
 AEFM relies on different components to perform efficiently and correctly.
 
