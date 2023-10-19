@@ -77,6 +77,7 @@ class BaseDataCollector(DataCollectorInterface):
                 test_case_data.operation,
             )
             statistical_data, raw_data = self.trace_collector.process_trace(trace_data)
+            end_to_end_data = self.trace_collector.end_to_end_data(raw_data)
         except:
             log.error(f"{test_case_data.name} trace collection failed!", to_file=True)
             traceback.print_exc()
@@ -119,12 +120,16 @@ class BaseDataCollector(DataCollectorInterface):
                 throughput_data = throughput_data.assign(
                     **test_case_data.additional_columns
                 )
+                end_to_end_data = throughput_data.assign(
+                    **test_case_data.additional_columns
+                )
             append_csv_to_file(
                 f"{self.data_path}/statistical_data.csv", statistical_data
             )
             append_csv_to_file(f"{self.data_path}/raw_data.csv", raw_data)
             append_csv_to_file(f"{self.data_path}/hardware_data.csv", hardware_data)
             append_csv_to_file(f"{self.data_path}/throughput_data.csv", throughput_data)
+            append_csv_to_file(f"{self.data_path}/end_to_end_data.csv", end_to_end_data)
 
         except:
             log.error(f"{test_case_data.name} data save failed!", to_file=True)

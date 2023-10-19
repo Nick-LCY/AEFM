@@ -80,3 +80,13 @@ class JaegerTraceCollector(TraceCollectorInterface):
         statistical_data = p50_data.merge(p95_data)
         original_data = exact_parent_duration_data
         return statistical_data, original_data
+
+    def end_to_end_data(self, raw_data: pd.DataFrame):
+        root_span = raw_data.loc[~raw_data["parent_id"].isin(raw_data["child_id"])]
+        return (
+            root_span[["trace_id", "parent_duration"]]
+            .rename(columns={"parent_duration": "trace_duration"})
+            .groupby("trace_id")
+            .max()
+            .reset_index()
+        )

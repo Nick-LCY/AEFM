@@ -16,7 +16,7 @@ def init(dir):
         create_folder(dir)
     else:
         dir = os.getcwd()
-    for file in os.listdir(TEMPLATE_DIR):
+    for file in ["handlers.py", "main.py", "sample_configs.yaml"]:
         shutil.copyfile(os.path.join(TEMPLATE_DIR, file), os.path.join(dir, file))
 
 
