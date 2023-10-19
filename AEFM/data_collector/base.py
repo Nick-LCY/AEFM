@@ -120,7 +120,7 @@ class BaseDataCollector(DataCollectorInterface):
                 throughput_data = throughput_data.assign(
                     **test_case_data.additional_columns
                 )
-                end_to_end_data = throughput_data.assign(
+                end_to_end_data = end_to_end_data.assign(
                     **test_case_data.additional_columns
                 )
             append_csv_to_file(

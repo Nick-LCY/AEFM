@@ -37,6 +37,10 @@ def auto_config():
             from .config_template import HOTEL_TEMPLATE as template
         case "social":
             from .config_template import SOCIAL_TEMPLATE as template
+        case "media":
+            from .config_template import MEDIA_TEMPLATE as template
+        case "train":
+            from .config_template import TRAIN_TEMPLATE as template
 
     nodes = get_nodes()
     if len(nodes) < 3:
