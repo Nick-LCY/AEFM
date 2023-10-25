@@ -85,6 +85,8 @@ def auto_config():
         for percentage in mem_percentages
     ]
 
+    exp_name = click.prompt(EXPERIMENT_NAME_MSG, type=click.STRING)
+
     config_yaml = yaml.load(template, Loader=yaml.CLoader)
     config_yaml = update(config_yaml, "prometheus_host", prom_host)
     config_yaml = update(config_yaml, "nodes", nodes_in_config)
@@ -92,8 +94,16 @@ def auto_config():
         config_yaml, "test_cases.interferences.mem_capacity.range", mem_infs
     )
     config_yaml = update(config_yaml, "test_cases.interferences.cpu.range", cpu_infs)
+    config_yaml = update(config_yaml, "file_paths.collector_data", f"data/{exp_name}")
+    config_yaml = update(config_yaml, "file_paths.log", f"log/{exp_name}.log")
+    config_yaml = update(
+        config_yaml, "file_paths.wrk_output_path", f"tmp/wrk_{exp_name}"
+    )
+
     yaml.Dumper.ignore_aliases = lambda *_: True
-    with open(f"{app}_config.yaml", "w") as file:
+    with open(f"{exp_name}.yaml", "w") as file:
         yaml.dump(config_yaml, file, default_flow_style=False)
 
-    click.echo(f"Config file is saved at {app}_config.yaml.")
+    click.echo(
+        f"Config file is saved at {exp_name}.yaml, you may need to change config file path in main.py."
+    )

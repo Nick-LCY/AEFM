@@ -1,9 +1,6 @@
 HOTEL_TEMPLATE = """
 file_paths:
-  collector_data: data/hotel
-  log: log/hotel.log
   yaml_repo: $MODULE_DEFAULT/hotel
-  wrk_output_path: tmp/wrk
 app: hotel
 port: 0
 replicas:
@@ -57,10 +54,7 @@ test_cases:
 """
 SOCIAL_TEMPLATE = """
 file_paths:
-  collector_data: data/social
-  log: log/social.log
   yaml_repo: $MODULE_DEFAULT/social
-  wrk_output_path: tmp/wrk
 app: social
 port: 30628
 replicas:
@@ -111,10 +105,7 @@ test_cases:
 """
 MEDIA_TEMPLATE = """
 file_paths:
-  collector_data: data/media
-  log: log/media.log
   yaml_repo: $MODULE_DEFAULT/media
-  wrk_output_path: tmp/wrk
 app: media
 port: 30092
 replicas:
@@ -165,10 +156,7 @@ test_cases:
 """
 TRAIN_TEMPLATE = """
 file_paths:
-  collector_data: data/train
-  log: log/train.log
   yaml_repo: $MODULE_DEFAULT/train
-  wrk_output_path: tmp/wrk
 app: train
 port: 0
 replicas:
