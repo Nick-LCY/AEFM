@@ -85,7 +85,7 @@ class TestCases:
     def __init__(self) -> None:
         """_summary_Used to record all test cases."""
         self.orders: list[str]
-        self.rounds: list[int]
+        self.round: list[int]
         self.workload: TestCases.Workload
         self.interferences: dict[str, TestCases.Interference] = {}
         self.generated_test_cases: list[TestCase] = []
@@ -102,7 +102,7 @@ class TestCases:
         """
         test_cases = TestCases()
         test_cases.orders = data["orders"]
-        test_cases.rounds = _load_range(data["rounds"])
+        test_cases.round = _load_range(data["round"])
         test_cases.workload = TestCases.Workload.load_from_dict(data["workload"])
         inf_data = data["interferences"] if data["interferences"] is not None else {}
         for inf_type in inf_data:
@@ -110,7 +110,7 @@ class TestCases:
                 inf_data[inf_type], inf_type
             )
         for key in data:
-            if key in ["orders", "rounds", "workload", "interferences"]:
+            if key in ["orders", "round", "workload", "interferences"]:
                 continue
             test_cases.__setattr__(key, data[key])
         return test_cases
@@ -140,7 +140,7 @@ class TestCases:
                 test_cases = [TestCase() for _ in iterator]
                 for obj, i in zip(test_cases, iterator):
                     match order:
-                        case "rounds":
+                        case "round":
                             obj.set_round(i)
                         case "workload":
                             wl = TestCase.Workload(i, **data)
@@ -158,7 +158,7 @@ class TestCases:
             for i in iterator:
                 updated_test_cases = [x.copy() for x in current_test_cases]
                 match order:
-                    case "rounds":
+                    case "round":
                         [x.set_round(i) for x in updated_test_cases]
                     case "workload":
                         wl = TestCase.Workload(i, **data)
@@ -175,8 +175,8 @@ class TestCases:
         test_cases = []
         for order in self.orders:
             match order:
-                case "rounds":
-                    test_cases = product(order, test_cases, self.rounds)
+                case "round":
+                    test_cases = product(order, test_cases, self.round)
                 case "workload":
                     wl = self.workload
                     test_cases = product(

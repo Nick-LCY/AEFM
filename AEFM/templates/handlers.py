@@ -152,8 +152,8 @@ def start_workload_handler():
     pass
 
 
-@register(event="start_rounds")
-def start_rounds_handler():
+@register(event="start_round")
+def start_round_handler():
     pass
 
 

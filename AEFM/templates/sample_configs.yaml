@@ -54,10 +54,10 @@ test_cases:
   # combinations of all items in orders.
   orders:
   - workload
-  - rounds
+  - round
   - mem_capacity
   - cpu
-  rounds:
+  round:
     min: 1
     max: 2
     step: 1

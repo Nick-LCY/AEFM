@@ -25,10 +25,10 @@ pod_spec:
 test_cases:
   orders:
   - workload
-  - rounds
+  - round
   - mem_capacity
   - cpu
-  rounds:
+  round:
     min: 1
     max: 3
     step: 1
@@ -79,10 +79,10 @@ pod_spec:
 test_cases:
   orders:
   - workload
-  - rounds
+  - round
   - mem_capacity
   - cpu
-  rounds:
+  round:
     min: 1
     max: 3
     step: 1
@@ -133,10 +133,10 @@ pod_spec:
 test_cases:
   orders:
   - workload
-  - rounds
+  - round
   - mem_capacity
   - cpu
-  rounds:
+  round:
     min: 1
     max: 3
     step: 1
@@ -188,10 +188,10 @@ pod_spec:
 test_cases:
   orders:
   - workload
-  - rounds
+  - round
   - mem_capacity
   - cpu
-  rounds:
+  round:
     min: 1
     max: 3
     step: 1

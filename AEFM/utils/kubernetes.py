@@ -87,9 +87,6 @@ def delete_by_yaml(
         delete_from_yaml(k8s_client=api_client, yaml_objects=objs)
     except FailToDeleteError as e:
         for api_exception in e.api_exceptions:
-            import ipdb
-
-            ipdb.set_trace()
             if api_exception.status != 404:
                 raise api_exception
     if wait:
