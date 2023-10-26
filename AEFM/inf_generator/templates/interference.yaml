@@ -18,4 +18,4 @@ spec:
           effect: NoSchedule
       containers:
       - name: interference
-        image: nicklin9907/aefm:ibench-1.2
+        image: nicklin9907/aefm:ibench-1.3

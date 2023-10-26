@@ -57,13 +57,15 @@ class BaseInfGenerator(InfGeneratorInterface):
             "network": "",
         }[self.inf_type]
 
+        duration = str(duration)
+
         match self.inf_type:
             case "cpu":
-                self.args = [f"{duration}s"]
+                self.args = [duration]
             case "mem_capacity":
-                self.args = [f"{duration}s"]
+                self.args = [duration, duration]
             case "mem_bandwidth":
-                self.args = [f"{duration}s"]
+                self.args = [duration]
             case "network":
                 self.args = [configs["throughput"], duration]
 
