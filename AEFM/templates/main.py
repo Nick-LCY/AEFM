@@ -1,7 +1,8 @@
 from handlers import *
 from AEFM.manager import manager
-from AEFM import configs
+from AEFM import set_config_file, set_log_level
 
-configs.CONFIG_FILE_PATH = "sample_configs.yaml"
+set_config_file("sample_configs.yaml")
+set_log_level("info")
 
 manager.run()

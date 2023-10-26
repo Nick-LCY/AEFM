@@ -13,3 +13,7 @@ def set_log_level(level: Literal["debug", "info", "key", "warn", "error", "off"]
     from .utils.logger import log
 
     log.level = level
+
+
+def set_config_file(file_path: str):
+    configs.CONFIG_FILE_PATH = file_path
