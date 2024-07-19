@@ -7,7 +7,7 @@ include = ["AEFM", "AEFM.*"]
 
 [project]
 name = "AEFM"
-version = "0.1.0"
+version = "0.1.1"
 description = "An automatic experiment framework for microservice."
 authors = [{name = "Nick Lin", email = "nicklin9907@gmail.com"}]
 license = {file = "license"}
@@ -19,6 +19,6 @@ dependencies = [
     "ipdb>=0.13.13",
     "PyYAML>=6.0",
     "kubernetes>=27.2.0",
-    "pandas==1.1.5",
+    "pandas>=1.1.5",
     "click>=8.1.7"
 ]

@@ -76,7 +76,7 @@ class BaseDeployer(DeployerInterface):
         Returns:
             BaseDeployer: Return self for chaining.
         """
-        delete_by_yaml(self.tmp_infra_path)
+        delete_by_yaml(self.tmp_infra_path, wait=True, namespace=self.namespace)
         deploy_by_yaml(self.tmp_infra_path, wait=True, namespace=self.namespace)
         return self
 
