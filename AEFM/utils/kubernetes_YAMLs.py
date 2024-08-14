@@ -3,6 +3,8 @@ from typing import Any, Optional
 from collections.abc import Callable
 from ..models import PodSpec, Node
 from .files import delete_path, create_folder
+from copy import deepcopy
+
 
 _AFFINITY_TEMPLATE = """
 nodeAffinity:
@@ -267,6 +269,7 @@ def _edit(yaml_obj: dict, path: str, value: Any):
     invalid_index_err = lambda x: IndexError(
         f"{x} is an invalid index! The list will have empty entry after insertion"
     )
+    value = deepcopy(value)
 
     def key_not_found(prop, obj):
         brackets = re.search(r"(.*)\[(\d+)\]", prop)

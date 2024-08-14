@@ -7,7 +7,7 @@ include = ["AEFM", "AEFM.*"]
 
 [project]
 name = "AEFM"
-version = "0.1.1"
+version = "0.1.2"
 description = "An automatic experiment framework for microservice."
 authors = [{name = "Nick Lin", email = "nicklin9907@gmail.com"}]
 license = {file = "license"}
