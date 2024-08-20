@@ -7,3 +7,6 @@ CHOOSE_TESTBED_MSG = "Choose testbed nodes (enter node names, seperated by comma
 PROMETHEUS_HOST_MSG = "Input your prometheus host address"
 
 EXPERIMENT_NAME_MSG = "Input your experiment name"
+
+CHOOSE_FILE_MSG = "Select files that you want to download"
+FILE_CHOICES = ["all", "nginx_configs", "deployment_yaml"]

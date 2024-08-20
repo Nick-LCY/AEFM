@@ -1,4 +1,4 @@
-import os, shutil, click, yaml
+import os, shutil, click, yaml, requests, pathlib
 from .messages import *
 from .utils import update
 from ..utils.files import create_folder
@@ -27,7 +27,6 @@ def auto_config():
     app = click.prompt(
         CHOOSE_APP_MSG,
         default="hotel",
-        hide_input=True,
         show_default=True,
         show_choices=True,
         type=click.Choice(APP_CHOICES),
@@ -107,3 +106,39 @@ def auto_config():
     click.echo(
         f"Config file is saved at {exp_name}.yaml, you may need to change config file path in main.py."
     )
+
+
+@click.command()
+def get_file():
+    get_file = click.prompt(
+        CHOOSE_FILE_MSG,
+        default="all",
+        show_default=True,
+        show_choices=True,
+        type=click.Choice(FILE_CHOICES),
+    )
+
+    def get_nginx_configs():
+        url = (
+            "https://github.com/Nick-LCY/AEFM/raw/main/DeathStarBench_Nginx_configs.zip"
+        )
+        response = requests.get(url, stream=True)
+        if response.status_code == 200:
+            with open("nginx_configs.zip", "wb") as file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    file.write(chunk)
+
+    def get_deployment_yaml():
+        yaml_repository = (
+            pathlib.Path(__file__).parent.parent.resolve().joinpath("yaml_repository")
+        )
+        shutil.copytree(yaml_repository, os.path.join(".", "deployment_yaml"))
+
+    match get_file:
+        case "all":
+            get_nginx_configs()
+            get_deployment_yaml()
+        case "nginx_configs":
+            get_nginx_configs()
+        case "deployment_yaml":
+            get_deployment_yaml()

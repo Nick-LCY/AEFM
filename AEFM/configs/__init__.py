@@ -90,7 +90,7 @@ class Configs:
                             else:
                                 configs.nodes[role].append(node)
                 case "pod_spec":
-                    configs.pod_spec: PodSpec = PodSpec.load_from_dict(config_yaml[key])
+                    configs.pod_spec = PodSpec.load_from_dict(config_yaml[key])
                 case "test_cases":
                     configs.test_cases = TestCases.load_from_dict(config_yaml[key])
                 case _:
