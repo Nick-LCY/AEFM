@@ -3,6 +3,7 @@
 tmp/
 data/
 log/
+local_test/
 
 *.egg-info
 .eggs

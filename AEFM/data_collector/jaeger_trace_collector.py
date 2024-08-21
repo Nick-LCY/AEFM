@@ -51,6 +51,18 @@ class JaegerTraceCollector(TraceCollectorInterface):
         else:
             log.debug(f"{__file__}: Number of traces: {len(data)}", to_file=True)
             return t_processor.load_from_json(data)
+    
+    def to_raw_data(self, collected_data: pd.DataFrame) -> pd.DataFrame:
+        return t_processor.exact_parent_duration(collected_data)
+    
+    def to_statistical_data(self, raw_data: pd.DataFrame):
+        p50_data = t_processor.decouple_parent_and_child(
+            raw_data, 0.5
+        ).rename(columns={"latency": "p50"})
+        p95_data = t_processor.decouple_parent_and_child(
+            raw_data, 0.95
+        ).rename(columns={"latency": "p95"})
+        return p50_data.merge(p95_data)
 
     def process_trace(
         self, collected_data: pd.DataFrame
@@ -81,7 +93,7 @@ class JaegerTraceCollector(TraceCollectorInterface):
         original_data = exact_parent_duration_data
         return statistical_data, original_data
 
-    def end_to_end_data(self, raw_data: pd.DataFrame):
+    def to_end_to_end_data(self, raw_data: pd.DataFrame):
         root_span = raw_data.loc[~raw_data["parent_id"].isin(raw_data["child_id"])]
         return (
             root_span[["trace_id", "parent_duration"]]

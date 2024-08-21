@@ -3,4 +3,5 @@ global-include *.lua
 global-exclude *.py[cod]
 include license
 exclude DeathStarBench_Nginx_configs.zip
+recursive-exclude local_test *
 graft AEFM/deployer/datasets
