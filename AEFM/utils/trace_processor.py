@@ -3,6 +3,13 @@ from typing import Union
 import re
 
 
+def _pandas_2_1_0_detect() -> bool:
+    major, minor, _ = [int(x) for x in pd.__version__.split(".")]
+    if major >= 2 and minor >= 1:
+        return True
+    return False
+
+
 def load_from_json(data) -> pd.DataFrame:
     """Parse json data into pandas dataframe.
 
@@ -10,11 +17,11 @@ def load_from_json(data) -> pd.DataFrame:
         data (json): Jaeger data in json format
 
     Returns:
-        pd.DataFrame: Processed jaeger data, columns: 
+        pd.DataFrame: Processed jaeger data, columns:
         trace_id, trace_time, start_time, end_time, parent_id, child_id,
         child_operation, parent_operation, child_ms, child_pod, parent_ms,
         parent_pod, parent_duration, child_duration
-    """    
+    """
 
     # Record's process id and microservice name mapping of all traces
     # Original headers: traceID, processes.p1.serviceName, processes.p2.serviceName, ...
@@ -25,23 +32,35 @@ def load_from_json(data) -> pd.DataFrame:
         .rename(
             columns=lambda x: re.sub(
                 r"processes\.(.*)\.serviceName|processes\.(.*)\.tags",
-                lambda match_obj: match_obj.group(1)
-                if match_obj.group(1)
-                else f"{match_obj.group(2)}Pod",
+                lambda match_obj: (
+                    match_obj.group(1)
+                    if match_obj.group(1)
+                    else f"{match_obj.group(2)}Pod"
+                ),
                 x,
             )
         )
         .rename(columns={"traceID": "traceId"})
     )
-    service_id_mapping = (
-        service_id_mapping.filter(regex=".*Pod")
-        .applymap(
-            lambda x: [v["value"] for v in x if v["key"] == "hostname"][0]
-            if isinstance(x, list)
-            else ""
-        )
-        .combine_first(service_id_mapping)
-    )
+
+    service_id_mapping = service_id_mapping.filter(regex=".*Pod")
+    if _pandas_2_1_0_detect():
+        service_id_mapping = service_id_mapping.map(
+            lambda x: (
+                [v["value"] for v in x if v["key"] == "hostname"][0]
+                if isinstance(x, list)
+                else ""
+            )
+        ).combine_first(service_id_mapping)
+    else:
+        service_id_mapping = service_id_mapping.applymap(
+            lambda x: (
+                [v["value"] for v in x if v["key"] == "hostname"][0]
+                if isinstance(x, list)
+                else ""
+            )
+        ).combine_first(service_id_mapping)
+
     spans_data = pd.json_normalize(data, record_path="spans")[
         [
             "traceID",
